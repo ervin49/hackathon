@@ -58,9 +58,13 @@ const formatDate = (timestamp) => {
     }
 };
 
-const PostCard = ({ post }) => {
+const PostCard = ({ post, onDelete }) => {
   const data = post;
   const { currentUser } = useAuth(); 
+  const [menuOpen, setMenuOpen] = useState(false);
+  const isOwner = !!currentUser && (
+    data.userId === currentUser.uid || (data.author && data.author.id === currentUser.uid) || data.userId === currentUser?.uid
+  );
 
   // LOGICA LIKE
   const [likesCount, setLikesCount] = useState(data.likes || 0); 
@@ -117,25 +121,52 @@ const PostCard = ({ post }) => {
     <div className="dark-card mb-6">
       
       {/* Header Postare */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '15px' }}>
-        <Link to={`/profile/${data.userId}`}> 
-          {/* 🛑 AFISARE AVATAR */}
-          <img 
-            src={data.profilePicture} 
-            alt={data.userName} 
-            style={{ width: '48px', height: '48px', borderRadius: '50%', objectFit: 'cover', border: '2px solid #8a2be2' }}
-          />
-        </Link>
-        <div>
-          <Link 
-            to={`/profile/${data.userId}`} 
-            className="dark-text-light" 
-            style={{ fontWeight: 'bold', textDecoration: 'none', color: '#93b5ff' }}
-          >
-            {data.userName}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', marginBottom: '15px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <Link to={`/profile/${data.userId}`}> 
+            {/* 🛑 AFISARE AVATAR */}
+            <img 
+              src={data.profilePicture} 
+              alt={data.userName || 'Avatar'} 
+              style={{ width: '48px', height: '48px', borderRadius: '50%', objectFit: 'cover', border: '2px solid #8a2be2' }}
+            />
           </Link>
-          <p className="dark-text-muted" style={{ fontSize: '12px', color: '#aaa' }}>{formatDate(data.timestamp)}</p>
+          <div>
+            <Link 
+              to={`/profile/${data.userId}`} 
+              className="dark-text-light" 
+              style={{ fontWeight: 'bold', textDecoration: 'none', color: '#93b5ff' }}
+            >
+              {data.userName}
+            </Link>
+            <p className="dark-text-muted" style={{ fontSize: '12px', color: '#aaa' }}>{formatDate(data.timestamp)}</p>
+          </div>
         </div>
+
+        {isOwner && (
+          <div style={{ position: 'relative' }}>
+            <button
+              onClick={() => setMenuOpen(prev => !prev)}
+              style={{ background: 'transparent', border: 'none', color: '#cbd5e1', fontSize: '20px', cursor: 'pointer', padding: '6px' }}
+              aria-label="Post options"
+            >
+              ⋯
+            </button>
+            {menuOpen && (
+              <div style={{ position: 'absolute', right: 0, top: '28px', background: '#231d30', border: '1px solid #2d2640', borderRadius: '8px', padding: '6px', zIndex: 20 }}>
+                <button
+                  onClick={() => {
+                    setMenuOpen(false);
+                    if (onDelete) onDelete(data.id);
+                  }}
+                  style={{ display: 'block', background: 'transparent', border: 'none', color: '#ef4444', padding: '8px 12px', cursor: 'pointer', textAlign: 'left' }}
+                >
+                  Delete Post
+                </button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Continutul Postarii */}

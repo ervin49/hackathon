@@ -2,10 +2,13 @@ import React, { useState } from 'react';
 import './ProfilePost.css';
 import { FiHeart, FiMessageCircle, FiShare2 } from 'react-icons/fi';
 import { FaHeart } from 'react-icons/fa';
+import { useAuth } from '../../context/AuthContext';
 
-const ProfilePost = ({ post, author, showActions = true }) => {
+const ProfilePost = ({ post, author, showActions = true, onDelete }) => {
   const [isLiked, setIsLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(post.likes || 0);
+  const { currentUser } = useAuth();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   // Merge author data: prefer fields from post.author but fall back to the `author` prop
   // This ensures that when rendering posts on a profile page we still show the profile's
@@ -14,6 +17,13 @@ const ProfilePost = ({ post, author, showActions = true }) => {
     ...(author || {}),
     ...(post.author || {}),
   };
+
+  const isOwner = (() => {
+    try {
+      const ownerId = post.userId || post.author?.id || authorData.id;
+      return currentUser && ownerId && currentUser.uid === ownerId;
+    } catch (e) { return false; }
+  })();
 
   const formatDate = (timestamp) => {
     if (!timestamp) return 'Unknown date';
@@ -61,6 +71,30 @@ const ProfilePost = ({ post, author, showActions = true }) => {
           <div className="profile-post__author-name">{authorData.name || authorData.displayName || authorData.username || 'Unknown'}</div>
           <div className="profile-post__timestamp">{formatDate(post.createdAt)}</div>
         </div>
+        {isOwner && (
+          <div style={{ marginLeft: 'auto', position: 'relative' }}>
+            <button
+              aria-label="post options"
+              onClick={() => setMenuOpen(prev => !prev)}
+              style={{ background: 'transparent', border: 'none', color: '#cbd5e1', cursor: 'pointer', padding: 8 }}
+            >
+              ⋯
+            </button>
+            {menuOpen && (
+              <div style={{ position: 'absolute', right: 0, top: 28, background: '#0b0b0b', border: '1px solid rgba(255,255,255,0.04)', borderRadius: 8, padding: 6, zIndex: 40 }}>
+                <button
+                  onClick={async () => {
+                    setMenuOpen(false);
+                    if (onDelete) return onDelete(post.id);
+                  }}
+                  style={{ background: 'transparent', border: 'none', color: '#ef4444', padding: '6px 10px', cursor: 'pointer' }}
+                >
+                  Delete Post
+                </button>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="profile-post__content">

@@ -14,7 +14,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyBG-ReVbPA6ZWA52PRlOZKt-uJUo5spcBs",
   authDomain: "hackathon-19efa.firebaseapp.com",
   projectId: "hackathon-19efa",
-  storageBucket: "hackathon-19efa.firebasestorage.app",
+  storageBucket: "hackathon-19efa.appspot.com",
   messagingSenderId: "21600496175",
   appId: "1:21600496175:web:b2e6929701114b5b0634da",
   measurementId: "G-Z359L1PTC4"

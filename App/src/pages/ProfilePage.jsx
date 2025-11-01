@@ -10,7 +10,8 @@ import {
   runTransaction,
   serverTimestamp,
   increment,
-  orderBy
+  orderBy,
+  deleteDoc
 } from 'firebase/firestore';
 import { db } from '../services/firebase';
 import { useAuth } from '../context/AuthContext';
@@ -172,6 +173,18 @@ const ProfilePage = () => {
     handleFollowToggle();
   };
 
+  const handleDeletePost = async (postId) => {
+    const confirm = window.confirm('Delete this post? This cannot be undone.');
+    if (!confirm) return;
+    try {
+      await deleteDoc(doc(db, 'posts', postId));
+      setUserPosts(prev => prev.filter(p => p.id !== postId));
+    } catch (err) {
+      console.error('Failed to delete post', err);
+      alert('Could not delete post. Try again.');
+    }
+  };
+
   const displayName = profileData.displayName || profileData.username || 'Anonymous';
 
   return (
@@ -248,7 +261,7 @@ const ProfilePage = () => {
           <div className="posts-list">
             {userPosts.length > 0 ? (
               userPosts.map(post => (
-                <ProfilePost key={post.id} post={post} author={profileData} showActions={false} />
+                <ProfilePost key={post.id} post={post} author={profileData} showActions={false} onDelete={handleDeletePost} />
               ))
             ) : (
               <div className="empty-posts">This user hasn't posted anything yet.</div>

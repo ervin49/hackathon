@@ -3,6 +3,8 @@ import { useAuth } from '../context/AuthContext';
 import PostCard from '../components/Post/PostCard'; 
 import CreatePost from '../components/Layout/CreatePost'; 
 import { getPosts } from '../services/postService'; 
+import { deleteDoc, doc } from 'firebase/firestore';
+import { db } from '../services/firebase';
 import { useNavigate } from 'react-router-dom';
 import { FiMessageSquare, FiTrendingUp, FiUser, FiLogOut, FiHome } from 'react-icons/fi';
 
@@ -55,6 +57,18 @@ const FeedPage = () => {
     refreshPosts(); 
   }, []); 
 
+  const handleDeletePost = async (postId) => {
+    if (!window.confirm('Are you sure you want to delete this post?')) return;
+    try {
+      await deleteDoc(doc(db, 'posts', postId));
+      // Remove locally to keep UI snappy
+      setPosts(prev => prev.filter(p => p.id !== postId));
+    } catch (err) {
+      console.error('Failed to delete post:', err);
+      alert('Could not delete post. Check permissions and try again.');
+    }
+  };
+
   const username = userData?.username || 'User';
 
   return (
@@ -76,22 +90,7 @@ const FeedPage = () => {
         height: '100vh',
         overflowY: 'auto'
       }}>
-        {/* Logo/Brand */}
-        <div style={{
-          marginBottom: '40px',
-          paddingBottom: '24px',
-          borderBottom: '1px solid #2d2640'
-        }}>
-          <h1 style={{
-            fontSize: '24px',
-            fontWeight: '700',
-            color: '#8b5cf6',
-            margin: 0,
-            letterSpacing: '-0.5px'
-          }}>
-            SocialHub
-          </h1>
-        </div>
+        {/* Logo/Brand (removed empty divider) */}
 
         {/* User Profile Card */}
         <div style={{
@@ -244,31 +243,15 @@ const FeedPage = () => {
         {/* Logout Button - Bottom */}
         <button
           onClick={handleLogout}
+          className="logout-button sidebar-logout"
           style={{
             display: 'flex',
             alignItems: 'center',
             gap: '12px',
-            padding: '14px 16px',
-            backgroundColor: 'transparent',
-            color: '#ef4444',
-            border: '1px solid #2d2640',
-            borderRadius: '12px',
-            fontSize: '15px',
-            fontWeight: '500',
-            cursor: 'pointer',
-            transition: 'all 0.2s',
             marginTop: '24px'
           }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = '#2d2640';
-            e.currentTarget.style.borderColor = '#ef4444';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = 'transparent';
-            e.currentTarget.style.borderColor = '#2d2640';
-          }}
         >
-          <FiLogOut style={{ width: '20px', height: '20px' }} />
+          <FiLogOut style={{ width: '18px', height: '18px' }} />
           <span>Logout</span>
         </button>
       </aside>
@@ -414,7 +397,7 @@ const FeedPage = () => {
                       e.currentTarget.style.borderColor = '#2d2640';
                       e.currentTarget.style.transform = 'translateY(0)';
                     }}
-                  >
+                    >
                     <PostCard 
                       post={{
                         ...post, 
@@ -425,6 +408,7 @@ const FeedPage = () => {
                           month: 'short' 
                         }) || 'just now'
                       }} 
+                      onDelete={handleDeletePost}
                     />
                   </div>
                 ))
