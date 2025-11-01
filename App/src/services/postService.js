@@ -1,4 +1,4 @@
-// src/services/postService.js (Cod COMPLET Modificat - Fragment getPosts)
+// src/services/postService.js (Cod COMPLET Modificat)
 
 import { db } from './firebase'; 
 import { 
@@ -8,12 +8,13 @@ import {
     getDocs, 
     addDoc,
     doc, 
-    getDoc, // 🛑 NOU: Necesită getDoc pentru a citi documentul utilizator
+    getDoc, 
     increment, 
     writeBatch, 
+    serverTimestamp // 🛑 NOU: Importă serverTimestamp
 } from "firebase/firestore";
 
-// 🛑 NOU: Importă avatarul de rezervă
+// 🛑 NOU: Importă avatarul de rezervă (pentru getPosts)
 import { defaultAvatar } from '../utils/avatarPaths'; 
 
 
@@ -29,20 +30,16 @@ export const getPosts = async () => {
     const querySnapshot = await getDocs(q);
     const posts = [];
     
-    // 🛑 MODIFICARE: Folosim for...of pentru a putea folosi await (căutare utilizator)
     for (const postDoc of querySnapshot.docs) {
         const data = postDoc.data();
         
-        // 1. Preluare document utilizator (pentru poza de profil)
         const userSnap = await getDoc(doc(db, "users", data.userId));
         const userData = userSnap.exists() ? userSnap.data() : {};
         
         posts.push({
             id: postDoc.id,
             ...data,
-            // 🛑 ATAȘARE AVATAR: Se trimite calea imaginii către PostCard
             profilePicture: userData.profilePicture || defaultAvatar,
-            
             authorId: data.userId, 
             authorUsername: data.userName,
         });
@@ -57,14 +54,15 @@ export const createPost = async (userId, userName, content) => {
         userId, 
         userName, 
         content,
-        timestamp: new Date(), 
+        // 🛑 CORECȚIE: Folosește serverTimestamp()
+        timestamp: serverTimestamp(), 
         likes: 0,
         commentsCount: 0,
     });
 };
 
 // -------------------------------------------------------------------
-// 2. FUNCȚII PENTRU LIKE/UNLIKE (Preluat din logica ta stabila)
+// 2. FUNCȚII PENTRU LIKE/UNLIKE 
 // -------------------------------------------------------------------
 
 export const checkIfLiked = async (postId, userId) => {
@@ -85,7 +83,7 @@ export const toggleLikePost = async (postId, userId, isCurrentlyLiked) => {
             likes: increment(-1) 
         });
     } else {
-        batch.set(likeRef, { userId: userId, likedAt: new Date() });
+        batch.set(likeRef, { userId: userId, likedAt: serverTimestamp() }); // 🛑 CORECȚIE: Folosește serverTimestamp() și aici
         batch.update(postRef, {
             likes: increment(1) 
         });
@@ -96,7 +94,7 @@ export const toggleLikePost = async (postId, userId, isCurrentlyLiked) => {
 
 
 // -------------------------------------------------------------------
-// 3. FUNCȚII PENTRU COMENTARII (Preluat din logica ta stabila)
+// 3. FUNCȚII PENTRU COMENTARII 
 // -------------------------------------------------------------------
 
 const postsCollection = "posts";
@@ -114,7 +112,7 @@ export const addComment = async (postId, userId, userName, content) => {
         authorId: userId,
         authorName: userName,
         content: content,
-        timestamp: new Date(),
+        timestamp: serverTimestamp(), // 🛑 CORECȚIE: Folosește serverTimestamp()
     });
 
     // 2. Incrementează contorul commentsCount

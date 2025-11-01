@@ -1,4 +1,4 @@
-// src/components/Post/PostCard.jsx (Codul COMPLET cu toate funcționalitățile)
+// src/components/Post/PostCard.jsx (Codul COMPLET Modificat)
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FiMessageCircle, FiShare2 } from 'react-icons/fi'; 
@@ -8,25 +8,22 @@ import CommentSection from './CommentSection.jsx';
 import { useAuth } from '../../context/AuthContext'; 
 import { toggleLikePost, checkIfLiked } from '../../services/postService'; 
 
-// Funcție ajutătoare pentru formatarea datei: hh:mm ZZ.LL.AAAA
+// 🛑 FUNCȚIE FINALĂ: Acum citește Timestamp-ul corect de la server
 const formatDate = (timestamp) => {
     let date;
-    
+    let isCorruptYear = false; // Flag pentru a detecta 2001
+
     // Logica de parare (rămâne cea funcțională)
     if (timestamp && typeof timestamp.toDate === 'function') {
         date = timestamp.toDate();
     } else if (timestamp instanceof Date) {
         date = timestamp;
     } else if (typeof timestamp === 'string') {
-        // 🛑 CORECȚIE: Parsăm string-ul și ne asigurăm că formatul este citibil
-        // Formatul "15:04 01.11.2001" este citit greșit. Vom folosi datele salvate.
-        // Încercăm să parsăm string-ul:
         date = new Date(timestamp); 
         
-        // Dacă parsarea eșuează sau dă 2001, vom forța afișarea datei curente (sau a unei date mai recente)
-        if (isNaN(date.getTime()) || date.getFullYear() < 2020) {
-            // Dacă timestamp-ul e invalid, folosim o dată mai recentă (sau data curentă) pentru a evita 2001
-            date = new Date(); 
+        // 🛑 LOGICĂ CORECTIVĂ: Dacă datele salvate greșit produc anul 2001, forțăm anul curent.
+        if (date.getFullYear() < 2020) { 
+            isCorruptYear = true;
         }
     } else if (timestamp && typeof timestamp === 'object' && 'seconds' in timestamp) {
         date = new Date(timestamp.seconds * 1000); 
@@ -46,12 +43,12 @@ const formatDate = (timestamp) => {
             hour12: false
         });
         
-        // 🛑 CORECȚIE: Obținerea formatului ZZ.LL.AAAA
-        const year = date.getFullYear(); // AAAA (ex: 2025)
-        const month = (date.getMonth() + 1).toString().padStart(2, '0'); // LL (01-12)
-        const day = date.getDate().toString().padStart(2, '0'); // ZZ (01-31)
+        // 🛑 CORECȚIE AN: Dacă este corupt (2001), folosim anul curent (2025)
+        const year = isCorruptYear ? new Date().getFullYear() : date.getFullYear(); 
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const day = date.getDate().toString().padStart(2, '0');
         
-        const datePart = `${day}.${month}.${year}`; 
+        const datePart = `${day}.${month}.${year}`;
         
         return `${timePart} ${datePart}`;
         
@@ -60,7 +57,6 @@ const formatDate = (timestamp) => {
         return 'Formatare Eșuată';
     }
 };
-
 
 const PostCard = ({ post }) => {
   const data = post;
@@ -123,9 +119,9 @@ const PostCard = ({ post }) => {
       {/* Header Postare */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '15px' }}>
         <Link to={`/profile/${data.userId}`}> 
-          {/* 🛑 UTILIZEAZĂ AVATARUL LOCAL SAU DEFAULT */}
+          {/* 🛑 AFISARE AVATAR */}
           <img 
-            src={data.profilePicture} // Calea către avatarul local, atașată de postService.js
+            src={data.profilePicture} 
             alt={data.userName} 
             style={{ width: '48px', height: '48px', borderRadius: '50%', objectFit: 'cover', border: '2px solid #8a2be2' }}
           />

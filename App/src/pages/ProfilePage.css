@@ -1,0 +1,305 @@
+/* ProfilePage.css
+   Comprehensive styles for the Profile page two-column layout.
+   Designed to echo the login page purple theme and provide
+   a polished responsive layout.
+*/
+
+:root {
+  --purple-50: #f5f3ff;
+  --purple-100: #ede9fe;
+  --purple-200: #ddd6fe;
+  --purple-400: #7c3aed;
+  --purple-500: #6d28d9;
+  --purple-600: #5b21b6;
+  --muted: #6b7280;
+  --card-bg: #ffffff;
+  --glass: rgba(255,255,255,0.6);
+}
+
+/* Page root */
+.profile-page-root {
+  padding: 28px 20px;
+  background: #000000; /* Full black background requested */
+  min-height: calc(100vh - 40px);
+  box-sizing: border-box;
+  font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  color: #e6e6e6;
+}
+
+/* Main container centered and responsive */
+.profile-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 34px;
+  align-items: start;
+}
+
+/* Left card */
+.profile-left-card {
+  background: #0b0b0b; /* dark card to sit on black background */
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+  overflow: hidden;
+  padding: 0 0 20px 0;
+  border: 1px solid rgba(255,255,255,0.04);
+}
+
+/* Hero area with avatar and name */
+.profile-hero {
+  padding: 20px;
+  background: linear-gradient(90deg, rgba(109,40,217,0.12), rgba(124,58,237,0.06));
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.profile-avatar-wrap {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 96px;
+  height: 96px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--purple-400), var(--purple-600));
+  padding: 3px;
+}
+
+.profile-avatar {
+  width: 88px;
+  height: 88px;
+  border-radius: 999px;
+  object-fit: cover;
+  display: block;
+  border: 3px solid rgba(255,255,255,0.92);
+  box-shadow: 0 6px 18px rgba(16,24,40,0.12);
+}
+
+.profile-hero-info {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* Inline follow button (near name) */
+.inline-follow {
+  padding: 6px 10px;
+  font-size: 13px;
+  border-radius: 8px;
+}
+
+.btn-follow.inline-follow {
+  padding: 6px 10px;
+}
+
+.profile-name {
+  font-size: 20px;
+  font-weight: 800;
+  margin: 0 0 6px 0;
+  color: #ffffff;
+}
+
+.profile-role {
+  font-size: 14px;
+  color: var(--purple-100);
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.profile-bio {
+  margin: 0;
+  color: #cfcfcf;
+  font-size: 13px;
+  line-height: 1.4;
+  max-height: 3.6em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Stats row */
+.profile-stats {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  justify-content: space-between;
+}
+
+.stat {
+  flex: 1 1 0;
+  text-align: center;
+  padding: 10px 8px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.03);
+}
+
+.stat-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: #bdbdbd;
+}
+
+/* Actions */
+.profile-actions {
+  padding: 0 16px 16px 16px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 160ms ease;
+}
+
+.btn-edit {
+  background: transparent;
+  color: var(--purple-100);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.4);
+  border: 1px solid rgba(255,255,255,0.04);
+}
+
+.btn-edit:hover { transform: translateY(-2px); }
+
+.btn-follow {
+  background: linear-gradient(90deg, var(--purple-500), var(--purple-600));
+  color: white;
+}
+
+.btn-follow.following {
+  background: transparent;
+  color: var(--purple-100);
+  border: 1px solid rgba(255,255,255,0.04);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Meta area: location, company, website */
+.profile-meta {
+  padding: 12px 16px;
+  border-top: 1px dashed rgba(255,255,255,0.03);
+  color: #d0d0d0;
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.meta-row a { color: var(--purple-600); text-decoration: none; }
+.meta-row a:hover { text-decoration: underline; }
+
+/* Right column: posts */
+.profile-right-posts {
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.posts-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.posts-header h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.posts-count { color: #bdbdbd; font-size: 13px; }
+
+.posts-list { display: flex; flex-direction: column; gap: 14px; }
+
+.empty-posts {
+  padding: 20px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.02);
+  color: #bdbdbd;
+  text-align: center;
+}
+
+/* Card style for each post (ProfilePost component will map to this) */
+.profile-post {
+  background: #0b0b0b;
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+  border: 1px solid rgba(255,255,255,0.03);
+}
+
+.profile-post .header {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.profile-post .author-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 999px;
+  object-fit: cover;
+}
+
+.profile-post .author-name { font-weight: 700; color: #ffffff; }
+.profile-post .content { margin-top: 10px; color: #d1d5db; }
+
+.profile-post .footer { margin-top: 12px; display: flex; gap: 10px; align-items: center; }
+
+.action-btn {
+  display: inline-flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 8px; font-size: 13px; color: var(--muted);
+}
+
+.action-btn:hover { background: rgba(16,24,40,0.03); color: #111827; }
+
+/* Responsive */
+@media (max-width: 980px) {
+  .profile-container { grid-template-columns: 1fr; padding: 0 8px; }
+  .profile-left-card { order: 2; }
+  .profile-right-posts { order: 1; }
+}
+
+/* Minor utilities */
+.text-muted { color: var(--muted); }
+.center { text-align: center; }
+
+/* Small helpers for accessibility */
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
+
+/* Extra fanciness to reach parity with the login visuals */
+.profile-left-card::before {
+  content: '';
+  display: block;
+  height: 6px;
+  background: linear-gradient(90deg, rgba(124,58,237,0.9), rgba(109,40,217,0.8));
+}
+
+/* subtle divider */
+.posts-list > * { transition: transform .12s ease, box-shadow .12s ease; }
+.posts-list > *:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(16,24,40,0.06); }
+
+/* generous spacing to make UI feel breathable */
+.profile-left-card, .profile-right-posts { padding-bottom: 18px; }
+
+/* end of file */
