@@ -44,6 +44,7 @@
   overflow: hidden;
   padding: 0 0 20px 0;
   border: 1px solid rgba(255,255,255,0.04);
+  z-index: 2;
 }
 
 /* Hero area with avatar and name */
@@ -53,6 +54,7 @@
   display: flex;
   gap: 16px;
   align-items: center;
+  overflow: hidden;
 }
 
 .profile-avatar-wrap {
@@ -80,6 +82,7 @@
 .profile-hero-info {
   flex: 1 1 auto;
   min-width: 0;
+  overflow: hidden;
 }
 
 /* Inline follow button (near name) */
@@ -98,6 +101,24 @@
   font-weight: 800;
   margin: 0 0 6px 0;
   color: #ffffff;
+  /* Prevent long names from overflowing into the feed column */
+  max-width: calc(100% - 120px); /* leave space for inline follow button */
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Allow wrapping on very small screens so name doesn't get truncated too aggressively */
+@media (max-width: 640px) {
+  .profile-name {
+    max-width: 100%;
+    white-space: normal;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
 }
 
 .profile-role {
@@ -212,6 +233,7 @@
   display: flex;
   flex-direction: column;
   gap: 18px;
+  z-index: 1;
 }
 
 .posts-header {

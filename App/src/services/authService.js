@@ -36,6 +36,8 @@ export const registerUser = async (email, password, username) => {
     bio: "Salut! Sunt nou pe platforma.",
     followers: [],
     following: [],
+    totalPoints : 0,
+    achievements : [],
     createdAt: new Date(),
     // 🛑 MODIFICARE: Salvează calea locală aleatorie
     profilePicture: initialAvatarUrl 

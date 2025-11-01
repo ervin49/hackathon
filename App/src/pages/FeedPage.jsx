@@ -153,14 +153,15 @@ const FeedPage = () => {
     }}>
       {/* Sidebar Stânga - Navigație */}
       <aside style={{
+        flex: '0 0 280px',
         width: '280px',
         backgroundColor: '#231d30',
         borderRight: '1px solid #2d2640',
         padding: '24px',
         display: 'flex',
         flexDirection: 'column',
-        position: 'fixed',
-        height: '100vh',
+        position: 'relative',
+        height: 'auto',
         overflowY: 'auto'
       }}>
         {/* User Profile Card */}
@@ -330,8 +331,8 @@ const FeedPage = () => {
       {/* Main Content Area - Centru */}
       <main style={{
         flex: 1,
-        marginLeft: '280px',
-        marginRight: '320px',
+        marginLeft: 0,
+        marginRight: 0,
         paddingTop: '20px',
         paddingBottom: '40px'
       }}>
@@ -492,13 +493,13 @@ const FeedPage = () => {
 
       {/* Sidebar Dreapta - Ieșiri */}
       <aside style={{
+        flex: '0 0 320px',
         width: '320px',
         backgroundColor: '#231d30',
         borderLeft: '1px solid #2d2640',
         padding: '24px',
-        position: 'fixed',
-        right: 0,
-        height: '100vh',
+        position: 'relative',
+        height: 'auto',
         overflowY: 'auto'
       }}>
         {/* Header */}
