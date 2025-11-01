@@ -1,3 +1,5 @@
+// src/App.jsx (Codul tău Rămâne NEmmodificat)
+
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 
@@ -21,7 +23,8 @@ function App() {
           {/* Rutele protejate folosesc PrivateRoute */}
           <Route element={<PrivateRoute />}>
             <Route path="/" element={<FeedPage />} />
-            <Route path="/profile/:userId" element={<ProfilePage />} />
+            {/* Ruta ta de profil folosește un parametru din URL pentru UID */}
+            <Route path="/profile/:userId" element={<ProfilePage />} /> 
           </Route>
           
           {/* Opțional: Ruta 404 (pentru orice altceva) */}

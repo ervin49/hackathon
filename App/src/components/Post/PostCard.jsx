@@ -1,4 +1,4 @@
-// src/components/Post/PostCard.jsx (Codul COMPLET)
+// src/components/Post/PostCard.jsx (Codul COMPLET cu toate funcționalitățile)
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FiMessageCircle, FiShare2 } from 'react-icons/fi'; 
@@ -8,7 +8,7 @@ import CommentSection from './CommentSection.jsx';
 import { useAuth } from '../../context/AuthContext'; 
 import { toggleLikePost, checkIfLiked } from '../../services/postService'; 
 
-
+// Funcție ajutătoare pentru formatarea datei: hh:mm ZZ.LL.AAAA
 const formatDate = (timestamp) => {
     let date;
     
@@ -60,6 +60,7 @@ const formatDate = (timestamp) => {
         return 'Formatare Eșuată';
     }
 };
+
 
 const PostCard = ({ post }) => {
   const data = post;
@@ -122,8 +123,9 @@ const PostCard = ({ post }) => {
       {/* Header Postare */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '15px' }}>
         <Link to={`/profile/${data.userId}`}> 
+          {/* 🛑 UTILIZEAZĂ AVATARUL LOCAL SAU DEFAULT */}
           <img 
-            src={data.authorAvatar || 'https://via.placeholder.com/48/3c3c3c/ffffff?text=U'} 
+            src={data.profilePicture} // Calea către avatarul local, atașată de postService.js
             alt={data.userName} 
             style={{ width: '48px', height: '48px', borderRadius: '50%', objectFit: 'cover', border: '2px solid #8a2be2' }}
           />

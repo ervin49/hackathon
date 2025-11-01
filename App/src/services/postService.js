@@ -1,4 +1,4 @@
-// src/services/postService.js (Cod COMPLET)
+// src/services/postService.js (Cod COMPLET Modificat - Fragment getPosts)
 
 import { db } from './firebase'; 
 import { 
@@ -8,10 +8,14 @@ import {
     getDocs, 
     addDoc,
     doc, 
-    getDoc, 
+    getDoc, // 🛑 NOU: Necesită getDoc pentru a citi documentul utilizator
     increment, 
     writeBatch, 
 } from "firebase/firestore";
+
+// 🛑 NOU: Importă avatarul de rezervă
+import { defaultAvatar } from '../utils/avatarPaths'; 
+
 
 // -------------------------------------------------------------------
 // 1. FUNCȚII DE BAZĂ (CITIRE / CREARE)
@@ -19,20 +23,30 @@ import {
 
 // Functie pentru a prelua toate postarile (pentru Feed)
 export const getPosts = async () => {
-    const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
+    const postsRef = collection(db, "posts");
+    const q = query(postsRef, orderBy("timestamp", "desc"));
     
     const querySnapshot = await getDocs(q);
     const posts = [];
     
-    querySnapshot.forEach((doc) => {
-        const data = doc.data();
+    // 🛑 MODIFICARE: Folosim for...of pentru a putea folosi await (căutare utilizator)
+    for (const postDoc of querySnapshot.docs) {
+        const data = postDoc.data();
+        
+        // 1. Preluare document utilizator (pentru poza de profil)
+        const userSnap = await getDoc(doc(db, "users", data.userId));
+        const userData = userSnap.exists() ? userSnap.data() : {};
+        
         posts.push({
-            id: doc.id,
+            id: postDoc.id,
             ...data,
+            // 🛑 ATAȘARE AVATAR: Se trimite calea imaginii către PostCard
+            profilePicture: userData.profilePicture || defaultAvatar,
+            
             authorId: data.userId, 
             authorUsername: data.userName,
         });
-    });
+    }
     
     return posts;
 };
@@ -43,7 +57,6 @@ export const createPost = async (userId, userName, content) => {
         userId, 
         userName, 
         content,
-        // 🛑 CORECȚIE: Folosim new Date() pentru a salva ca string în Firestore (conform structurii tale)
         timestamp: new Date(), 
         likes: 0,
         commentsCount: 0,
@@ -83,7 +96,7 @@ export const toggleLikePost = async (postId, userId, isCurrentlyLiked) => {
 
 
 // -------------------------------------------------------------------
-// 3. FUNCȚII PENTRU COMENTARII (NOU)
+// 3. FUNCȚII PENTRU COMENTARII (Preluat din logica ta stabila)
 // -------------------------------------------------------------------
 
 const postsCollection = "posts";
@@ -101,7 +114,7 @@ export const addComment = async (postId, userId, userName, content) => {
         authorId: userId,
         authorName: userName,
         content: content,
-        timestamp: new Date(), // Sincronizat cu formatul PostCard
+        timestamp: new Date(),
     });
 
     // 2. Incrementează contorul commentsCount

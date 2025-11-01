@@ -1,3 +1,5 @@
+// src/services/authService.js (Cod COMPLET Modificat)
+
 import { auth, db } from './firebase'; 
 import { 
   createUserWithEmailAndPassword, 
@@ -5,30 +7,38 @@ import {
   signOut 
 } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
+// 🛑 MODIFICARE: Importă lista de avatare
+import { AVAILABLE_AVATARS } from '../utils/avatarPaths'; 
+
+// 🛑 NOU: Funcție ajutătoare pentru a alege aleatoriu un avatar
+const getRandomAvatar = () => {
+    const index = Math.floor(Math.random() * AVAILABLE_AVATARS.length);
+    return AVAILABLE_AVATARS[index];
+};
+
 
 /**
  * Inregistreaza un utilizator nou cu email si parola si ii salveaza profilul in Firestore.
- * @param {string} email - Email-ul utilizatorului.
- * @param {string} password - Parola utilizatorului.
- * @param {string} username - Numele de utilizator.
- * @returns {Promise<Object>} Obiectul utilizatorului Firebase.
  */
 export const registerUser = async (email, password, username) => {
   // 1. Creeaza user-ul in Firebase Authentication
   const userCredential = await createUserWithEmailAndPassword(auth, email, password);
   const user = userCredential.user;
 
+  // 🛑 MODIFICARE: Alege un avatar aleatoriu
+  const initialAvatarUrl = getRandomAvatar(); 
+
   // 2. Adauga detalii suplimentare in Firestore
-  // Folosim UID-ul userului ca ID al documentului in colectia 'users'
   await setDoc(doc(db, "users", user.uid), {
     uid: user.uid,
     username: username,
     email: email,
-    bio: "Salut! Sunt nou pe platforma.", // Bio default
+    bio: "Salut! Sunt nou pe platforma.",
     followers: [],
     following: [],
     createdAt: new Date(),
-    profilePicture: '/assets/default-profile.png' // Presupune ca ai o imagine default in public/assets
+    // 🛑 MODIFICARE: Salvează calea locală aleatorie
+    profilePicture: initialAvatarUrl 
   });
 
   return user;
@@ -36,9 +46,6 @@ export const registerUser = async (email, password, username) => {
 
 /**
  * Autentifica un utilizator existent.
- * @param {string} email - Email-ul utilizatorului.
- * @param {string} password - Parola utilizatorului.
- * @returns {Promise<Object>} Obiectul utilizatorului Firebase.
  */
 export const loginUser = async (email, password) => {
   const userCredential = await signInWithEmailAndPassword(auth, email, password);
@@ -47,7 +54,6 @@ export const loginUser = async (email, password) => {
 
 /**
  * Deautentifica utilizatorul curent.
- * @returns {Promise<void>}
  */
 export const logoutUser = () => {
   return signOut(auth);
