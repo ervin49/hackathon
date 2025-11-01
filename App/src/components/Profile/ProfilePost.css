@@ -1,0 +1,91 @@
+.profile-post {
+  background: #1f1f1f;
+  border-radius: 12px;
+  padding: 16px;
+  color: #e5e7eb;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.45);
+}
+
+.profile-post__header {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.profile-post__author-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255,255,255,0.04);
+}
+
+.profile-post__author-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-post__author-name {
+  font-weight: 700;
+  color: #f3f4f6;
+}
+
+.profile-post__timestamp {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.profile-post__content {
+  margin-top: 8px;
+}
+
+.profile-post__text {
+  line-height: 1.45;
+  color: #d1d5db;
+}
+
+.profile-post__image {
+  margin-top: 12px;
+  width: 100%;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.profile-post__footer {
+  margin-top: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.profile-post__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.profile-post__action {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background: rgba(255,255,255,0.02);
+  border-radius: 8px;
+  color: #cbd5e1;
+  border: none;
+  cursor: pointer;
+}
+
+.profile-post__action.liked {
+  color: #ef4444;
+}
+
+.profile-post__action svg {
+  width: 18px;
+  height: 18px;
+}
+
+.profile-post__action-count {
+  font-size: 13px;
+  color: #cbd5e1;
+}
