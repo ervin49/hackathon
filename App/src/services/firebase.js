@@ -1,11 +1,15 @@
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+// App/src/services/firebase.js
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// Importă funcția de inițializare a aplicației (existentă)
+import { initializeApp } from "firebase/app";
+
+// Importă serviciile specifice de care ai nevoie:
+import { getAuth } from "firebase/auth";       // Pentru autentificare (login, register)
+import { getFirestore } from "firebase/firestore"; // Pentru baza de date (postări, useri)
+import { getStorage } from "firebase/storage";   // Pentru imagini și video-uri (Storage)
+// import { getAnalytics } from "firebase/analytics"; // Analytics e optional in development
+
+// Configuratia ta existenta:
 const firebaseConfig = {
   apiKey: "AIzaSyBG-ReVbPA6ZWA52PRlOZKt-uJUo5spcBs",
   authDomain: "hackathon-19efa.firebaseapp.com",
@@ -16,6 +20,22 @@ const firebaseConfig = {
   measurementId: "G-Z359L1PTC4"
 };
 
-// Initialize Firebase
+// Inițializarea aplicației (existentă)
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+// const analytics = getAnalytics(app); // Poți comenta asta în timpul dezvoltării
+
+// ----------------------------------------------------
+// NOU: Inițializarea și Exportul Serviciilor
+// ----------------------------------------------------
+
+// 1. Inițializează și exportă serviciul de Autentificare
+export const auth = getAuth(app);
+
+// 2. Inițializează și exportă serviciul de Bază de Date Firestore
+export const db = getFirestore(app);
+
+// 3. Inițializează și exportă serviciul de Stocare (pentru imagini/video)
+export const storage = getStorage(app);
+
+// Păstrezi exportul pentru o eventuală refolosire a instanței de bază:
+export default app;
