@@ -55,12 +55,12 @@ const CommentSection = ({ postId, initialCount, onCommentAdded }) => {
 
   return (
     <div className="comment-section" style={{ marginTop: '20px', borderTop: '1px solid #444', paddingTop: '15px' }}>
-      <h4 style={{ color: '#f0f0f0', fontSize: '1em', marginBottom: '10px', fontWeight: 'bold' }}>Comentarii ({commentsCount})</h4>
+      <h4 style={{ color: '#f0f0f0', fontSize: '1em', marginBottom: '10px', fontWeight: 'bold' }}>{commentsCount}) comments</h4>
 
       {/* Lista Comentarii */}
       <div style={{ maxHeight: '200px', overflowY: 'auto', marginBottom: '15px' }}>
         {loading ? (
-            <p style={{ color: '#aaa', textAlign: 'center' }}>Se încarcă comentariile...</p>
+            <p style={{ color: '#aaa', textAlign: 'center' }}>Comments loading...</p>
         ) : comments.length > 0 ? (
             comments.map((c) => (
               <div key={c.id} style={{ borderBottom: '1px dotted #444', padding: '8px 0' }}>
@@ -89,7 +89,7 @@ const CommentSection = ({ postId, initialCount, onCommentAdded }) => {
             className="submit-button" 
             style={{ width: '100px', padding: '5px 10px', fontSize: '15px' }}
           >
-            Trimite
+            Send
           </button>
         </form>
       ) : (

@@ -33,7 +33,7 @@ export const registerUser = async (email, password, username) => {
     uid: user.uid,
     username: username,
     email: email,
-    bio: "Salut! Sunt nou pe platforma.",
+    bio: "Hello! I'm new here.",
     followers: [],
     following: [],
     totalPoints : 0,
