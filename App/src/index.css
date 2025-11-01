@@ -9,9 +9,8 @@ body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #1a1a1a; /* 🌟 Fundal Negru Închis (Dark Mode Base) 🌟 */
     min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    /* Alinierea flex o mutam pe containerul principal App.jsx,
+       pentru a nu afecta Header-ul care e sticky. */
     color: #f0f0f0; /* Textul de bază devine alb deschis */
 }
 
@@ -25,6 +24,11 @@ body {
     max-width: 1200px;
     padding: 20px;
     box-sizing: border-box;
+    /* Alinierea pentru pagina de login */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
 }
 
 /* Cardul Principal cu Două Coloane */
@@ -93,14 +97,14 @@ body {
 .recovery-link {
     text-align: right;
     font-size: 14px;
-    color: #bb99ff; /* Mov mai deschis */
+    color: #bb99ff; 
     text-decoration: none;
     transition: color 0.2s;
     margin-top: -10px;
 }
 
 .recovery-link:hover {
-    color: #9c68cc; /* Mov mai închis la hover */
+    color: #9c68cc; 
     text-decoration: underline;
 }
 
@@ -131,7 +135,7 @@ body {
 
 /* Mesaj de Eroare */
 .error-message {
-    background-color: #4a1b1b; /* Fundal roșu închis pentru dark mode */
+    background-color: #4a1b1b; 
     color: #ffcccc;
     padding: 12px;
     border-radius: 8px;
@@ -146,7 +150,7 @@ body {
     text-align: center;
     margin-top: 30px;
     padding-top: 25px;
-    border-top: 1px solid #444; /* Linie separatoare gri închis */
+    border-top: 1px solid #444; 
 }
 
 .toggle-button {
@@ -167,7 +171,7 @@ body {
 /* Coloana Vizuală (dreapta) */
 .auth-image-column {
     flex: 1;
-    background-color: #383838; /* Fundal Coloana Imagine */
+    background-color: #383838; 
     display: flex;
     align-items: center;
     justify-content: center;
@@ -192,9 +196,122 @@ body {
         padding: 30px;
     }
     .auth-image-column {
-        display: none; /* Ascunde imaginea pe ecrane mici */
+        display: none; 
     }
     .auth-title {
         font-size: 30px;
     }
+}
+
+/* -------------------------------------------------- */
+/* 3. STILURI FEED (FeedPage, PostCard, CreatePost) */
+/* -------------------------------------------------- */
+
+/* Stilul Header-ului Aplicatiei */
+.app-header {
+    background-color: #2b2b2b; /* Acelasi fundal ca si cardul de login */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    border-bottom: 1px solid #383838;
+    padding: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+}
+
+.app-logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: #8a2be2; /* Mov */
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.header-link, .header-button {
+    color: #f0f0f0;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 8px 12px;
+    border-radius: 6px;
+    transition: background-color 0.2s;
+}
+
+.header-link:hover {
+    background-color: #383838;
+}
+
+/* Butonul de Logout */
+.logout-button {
+    background-color: #ef4444; /* Rosu */
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.logout-button:hover {
+    background-color: #b91c1c;
+}
+
+
+/* Stilul Cardurilor (PostCard & CreatePost) */
+.dark-card {
+    background-color: #2b2b2b; /* Fundal card */
+    border: 1px solid #383838;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: box-shadow 0.3s;
+}
+
+.dark-card:hover {
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Stilul Textului General */
+.dark-text-light {
+    color: #f0f0f0; /* Text alb pentru titluri/continut */
+}
+
+.dark-text-muted {
+    color: #b0b0b0; /* Text gri deschis pentru metadata */
+}
+
+/* Stiluri Inputuri Postare (textarea) */
+.post-input {
+    background-color: #383838;
+    color: #f0f0f0;
+    border: 1px solid #444;
+    border-radius: 8px;
+    padding: 12px;
+    resize: none;
+    width: 100%;
+}
+
+.post-input:focus {
+    border-color: #8a2be2;
+    outline: none;
+}
+
+/* Stil pentru Butoanele de Interacțiune (Like, Comment) */
+.icon-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #b0b0b0;
+    display: flex;
+    align-items: center;
+    padding: 5px 10px;
+    border-radius: 6px;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.icon-button:hover {
+    color: #8a2be2; /* Mov la hover */
+    background-color: #383838;
+}
+
+.icon-button-active {
+    color: #ef4444; /* Rosu (pentru Like activ) */
 }

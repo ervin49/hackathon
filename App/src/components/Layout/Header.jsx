@@ -1,53 +1,49 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext'; // Importăm hook-ul de autentificare
+import { useAuth } from '../../context/AuthContext';
 
 const Header = () => {
-  const { currentUser, userData, logout } = useAuth(); // Preluăm starea userului și funcția de logout
+  const { currentUser, userData, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
     try {
       await logout();
-      navigate('/login'); // Redirecționează la pagina de login după logout
+      navigate('/login');
     } catch (error) {
-      console.error("Eroare la delogare:", error);
-      // Poți afișa un mesaj de eroare prietenos aici
-      alert("Nu am putut efectua delogarea. Te rugăm să încerci din nou.");
+      console.error("Logout Error:", error);
+      alert("Failed to log out. Please try again.");
     }
   };
 
   return (
-    <header className="bg-white shadow-md p-4 flex justify-between items-center sticky top-0 z-10">
-      {/* Logo-ul/Numele aplicației */}
-      <Link to="/" className="text-2xl font-bold text-blue-600 hover:text-blue-800 transition duration-200">
+    // ❗ Aplică clasa app-header
+    <header className="app-header"> 
+      
+      {/* ❗ Aplică clasa app-logo */}
+      <Link to="/" className="app-logo">
         SocialHub
       </Link>
       
-      {/* Navigare (se adaptează dacă userul e logat sau nu) */}
       <nav className="flex items-center space-x-4">
-        {currentUser ? (
-          <>
-            {/* Link către profilul utilizatorului logat */}
+        {currentUser && userData ? (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
             <Link 
               to={`/profile/${currentUser.uid}`} 
-              className="text-gray-700 hover:text-blue-500 font-medium transition duration-200"
+              className="header-link" // Clasa pentru link
             >
-              {/* Afișează username-ul din Firestore dacă este disponibil */}
-              {userData && userData.username ? userData.username : 'Profil'}
+              {userData.username}
             </Link>
             
-            {/* Buton de Logout */}
             <button
               onClick={handleLogout}
-              className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition duration-150 ease-in-out font-medium"
+              className="logout-button" // Clasa pentru butonul Logout
             >
               Logout
             </button>
-          </>
+          </div>
         ) : (
-          // Link către pagina de login dacă nu este logat
-          <Link to="/login" className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-150 ease-in-out font-medium">
+          <Link to="/login" className="header-link">
             Login
           </Link>
         )}

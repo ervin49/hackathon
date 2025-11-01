@@ -1,61 +1,68 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import PostCard from '../components/Post/PostCard'; 
-// Importă componenta pentru crearea de postări (o vom face funcțională în pasul următor)
 import CreatePost from '../components/Layout/CreatePost'; 
-
-// Date Fictive pentru a umple Feed-ul (vor fi înlocuite cu date din Firestore)
-const mockPosts = [
-  {
-    id: 'p1',
-    authorId: 'user123',
-    authorUsername: 'ExplorerMatei',
-    authorAvatar: 'https://cdn.pixabay.com/photo/2016/08/20/12/35/user-1606880_1280.png',
-    content: 'Primul test în noul nostru Feed! Interfața arată fantastic cu Tailwind CSS.',
-    timestamp: 'acum 5 minute',
-    likesCount: 25,
-    commentsCount: 5,
-    mediaUrl: null,
-  },
-  {
-    id: 'p2',
-    authorId: 'user456',
-    authorUsername: 'ReactDev',
-    authorAvatar: 'https://cdn.pixabay.com/photo/2016/11/14/17/39/person-1824147_1280.png',
-    content: 'Contextul de Autentificare funcționează perfect! Gata să implementăm crearea de postări mâine.',
-    timestamp: 'acum 2 ore',
-    likesCount: 150,
-    commentsCount: 12,
-    mediaUrl: 'https://images.unsplash.com/photo-1542831371-29b0f74f9713?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-  },
-  // Mai poți adăuga postări aici...
-];
+import { getPosts } from '../services/postService'; 
 
 const FeedPage = () => {
   const { userData } = useAuth();
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Funcție de reîmprospătare (o vom folosi după ce se creează o postare nouă)
+  const refreshPosts = async () => {
+      try {
+          const fetchedPosts = await getPosts();
+          setPosts(fetchedPosts);
+          setError(null);
+      } catch (err) {
+          console.error("Eroare la reîncărcarea postărilor:", err);
+          setError("Nu am putut reîncărca postările.");
+      } finally {
+          setLoading(false);
+      }
+  };
+
+  useEffect(() => {
+    // Ruleaza functia de preluare a postarilor la incarcarea paginii
+    refreshPosts(); 
+  }, []); 
+
+  if (loading) {
+    return <div className="text-center mt-20 text-gray-400">Se încarcă Feed-ul...</div>;
+  }
+
+  if (error) {
+    return <div className="text-center mt-20 text-red-500">{error}</div>;
+  }
   
-  // Numele utilizatorului logat
-  const username = userData?.username || 'Utilizator';
+  const username = userData?.username || 'User';
 
   return (
-    <div className="max-w-xl mx-auto p-4">
-      {/* Mesajul de Bun Venit */}
-      <h1 className="text-3xl font-extrabold text-gray-800 mb-6">
-        Salut, {username}!
-      </h1>
+    <div className="max-w-xl mx-auto p-4 pt-8">
       
-      {/* 1. Zona de Creat Postare (Pasul Următor) */}
-      <CreatePost />
+      {/* 1. Zona de Creat Postare (Trimitem functia de refresh ca prop) */}
+      <CreatePost onPostCreated={refreshPosts} />
 
       {/* 2. Feed-ul de Postări */}
-      <div className="space-y-6">
-        <h2 className="text-xl font-bold text-gray-700 mb-4">Postări Recente</h2>
-        {mockPosts.map((post) => (
-          // Randează componenta PostCard pentru fiecare postare
-          <PostCard key={post.id} post={post} />
-        ))}
+      <div className="space-y-6 mt-8">
+        <h2 className="text-xl font-bold text-gray-700 mb-4">Latest Posts</h2>
         
-        <p className="text-center text-gray-500 pt-4">Ai ajuns la finalul feed-ului static.</p>
+        {posts.length === 0 ? (
+            <p className="text-gray-500 text-center">No posts yet. Be the first to share!</p>
+        ) : (
+            posts.map((post) => (
+                <PostCard 
+                    key={post.id} 
+                    post={{
+                        ...post, 
+                        // Conversia obiectului Timestamp de la Firebase la un string lizibil
+                        timestamp: post.timestamp?.toDate().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: 'short' }) || 'just now'
+                    }} 
+                />
+            ))
+        )}
       </div>
     </div>
   );

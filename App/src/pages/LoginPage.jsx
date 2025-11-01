@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import WelcomeImage from '../assets/images/image.png';
+import WelcomeImage from '../assets/images/image.png'; // Assuming this is your imported image
+
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -21,7 +22,7 @@ const LoginPage = () => {
     try {
       if (isRegistering) {
         if (!username) {
-          setError("Numele de utilizator este obligatoriu.");
+          setError("Username is required.");
           setLoading(false);
           return;
         }
@@ -32,15 +33,18 @@ const LoginPage = () => {
       
       navigate('/'); 
     } catch (err) {
-      console.error("Eroare Firebase:", err.message);
-      let errorMessage = "Autentificarea a eșuat. Verifică datele.";
+      console.error("Firebase Error:", err.message);
+      let errorMessage = "Authentication failed. Please check your credentials.";
+      
+      // Error handling based on Firebase codes
       if (err.code === 'auth/email-already-in-use') {
-        errorMessage = "Acest email este deja folosit.";
+        errorMessage = "This email is already in use.";
       } else if (err.code === 'auth/invalid-credential' || err.code === 'auth/user-not-found') {
-        errorMessage = "Email sau parolă incorecte.";
+        errorMessage = "Incorrect email or password.";
       } else if (err.code === 'auth/weak-password') {
-        errorMessage = "Parola trebuie să aibă minim 6 caractere.";
+        errorMessage = "Password must be at least 6 characters long.";
       }
+      
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -50,13 +54,13 @@ const LoginPage = () => {
   return (
     <div className="auth-page-container">
       <div className="auth-card">
-        {/* Coloana de Formular (stânga) */}
+        {/* Form Column (Left) */}
         <div className="auth-form-column">
           <h2 className="auth-title">
-            {isRegistering ? 'Crează un Cont' : 'Hello Again!'}
+            {isRegistering ? 'Create Account' : 'Hello Again!'}
           </h2>
           <p className="auth-subtitle">
-            {isRegistering ? 'Alătură-te comunității noastre.' : "Să începem cu contul tău."}
+            {isRegistering ? 'Join our community.' : "Let's start with your account."}
           </p>
 
           {error && (
@@ -71,7 +75,7 @@ const LoginPage = () => {
                 type="text" 
                 value={username} 
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="Nume de utilizator"
+                placeholder="Username"
                 className="form-input" 
                 required
               />
@@ -88,13 +92,13 @@ const LoginPage = () => {
               type="password" 
               value={password} 
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Parolă"
+              placeholder="Password"
               className="form-input" 
               required
             />
             
             {!isRegistering && (
-              <a href="#" className="recovery-link">Ai uitat parola?</a>
+              <a href="#" className="recovery-link">Forgot password?</a>
             )}
 
             <button 
@@ -102,7 +106,7 @@ const LoginPage = () => {
               disabled={loading}
               className="submit-button"
             >
-              {loading ? 'Se procesează...' : isRegistering ? 'Înregistrează-te' : 'Intră în Cont'}
+              {loading ? 'Processing...' : isRegistering ? 'Sign Up' : 'Log In'}
             </button>
           </form>
 
@@ -112,18 +116,18 @@ const LoginPage = () => {
               className="toggle-button"
             >
               {isRegistering
-                ? "Ai deja un cont? Autentifică-te."
-                : "Nu ai cont? Înregistrează-te acum."
+                ? "Already have an account? Log In."
+                : "Don't have an account? Sign Up now."
               }
             </button>
           </div>
         </div>
 
-        {/* Coloana Vizuală (dreapta) */}
+        {/* Visual Column (Right) */}
         <div className="auth-image-column">
           <img 
             src={WelcomeImage}
-            alt="Welcome" 
+            alt="Welcome to SocialHub" 
             className="auth-image"
           />
         </div>

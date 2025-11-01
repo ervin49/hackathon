@@ -1,46 +1,62 @@
 import React, { useState } from 'react';
-// import { useAuth } from '../../context/AuthContext'; // Va fi necesar pentru a prelua user-ul
-// import { createPost } from '../../services/postService'; // Va fi necesar pentru a trimite postarea
+import { useAuth } from '../../context/AuthContext';
+import { createPost } from '../../services/postService';
 
-const CreatePost = () => {
+const CreatePost = ({ onPostCreated }) => { 
   const [postContent, setPostContent] = useState('');
-  // const { userData } = useAuth(); // Va fi necesar cand vom implementa logica
+  const [loading, setLoading] = useState(false);
+  const { userData, currentUser } = useAuth(); 
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (postContent.trim() === '') {
-      return; // Nu trimite postare goala
+    const content = postContent.trim();
+    if (content === '' || !currentUser || !userData) return; 
+
+    setLoading(true);
+
+    try {
+      await createPost(
+        currentUser.uid, 
+        userData.username, 
+        content
+      );
+      
+      setPostContent(''); 
+      onPostCreated(); 
+    } catch (error) {
+      console.error('Error creating post:', error);
+      alert('Failed to create post. Check console for details.');
+    } finally {
+      setLoading(false);
     }
-    
-    // Aici va veni logica de trimitere a postarii catre Firebase
-    console.log('Postare trimisa (momentan, in consola):', postContent);
-    
-    // createPost(userData.uid, postContent); 
-    setPostContent(''); // Golește câmpul după trimitere
   };
 
   return (
-    <div className="bg-white p-5 rounded-xl shadow-lg mb-8 border border-gray-200">
-      <h3 className="text-lg font-semibold text-gray-700 mb-3">Ce mai e nou?</h3>
+    // ❗ Aplică clasa dark-card
+    <div className="dark-card mb-8">
+      {/* ❗ Aplică clasa dark-text-light */}
+      <h3 className="text-lg font-semibold dark-text-light mb-3">What's on your mind?</h3>
       
       <form onSubmit={handleSubmit}>
         <textarea
           value={postContent}
           onChange={(e) => setPostContent(e.target.value)}
-          placeholder="Scrie o postare..."
+          placeholder={`Share something, ${userData?.username || 'User'}...`}
           rows="3"
-          className="w-full p-3 border border-gray-300 rounded-lg resize-none focus:ring-blue-500 focus:border-blue-500 transition duration-150"
+          // ❗ Aplică clasa post-input
+          className="post-input" 
           required
         />
         
-        {/* Buton de Postare */}
-        <div className="flex justify-end mt-3">
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '12px' }}>
           <button
             type="submit"
-            className="bg-blue-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-blue-700 transition duration-150 disabled:bg-gray-400"
-            disabled={postContent.trim() === ''}
+            // Butonul ramane mov, conform tematicii
+            className="submit-button" 
+            disabled={postContent.trim() === '' || loading}
+            style={{ padding: '8px 20px', fontSize: '16px' }} 
           >
-            Postează
+            {loading ? 'Posting...' : 'Post'}
           </button>
         </div>
       </form>
@@ -48,5 +64,4 @@ const CreatePost = () => {
   );
 };
 
-// 🌟 SOLUȚIA: Exportul default pentru a se potrivi cu importul din FeedPage.jsx
 export default CreatePost;
