@@ -1,68 +1,200 @@
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+/* App/src/index.css */
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
+/* -------------------------------------------------- */
+/* 1. STILURI GLOBALE ȘI RESET */
+/* -------------------------------------------------- */
 body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #1a1a1a; /* 🌟 Fundal Negru Închis (Dark Mode Base) 🌟 */
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #f0f0f0; /* Textul de bază devine alb deschis */
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+/* -------------------------------------------------- */
+/* 2. STILURI PAGINA DE AUTENTIFICARE (LoginPage.jsx) */
+/* -------------------------------------------------- */
+
+/* Containerul Paginii de Autentificare */
+.auth-page-container {
+    width: 100%;
+    max-width: 1200px;
+    padding: 20px;
+    box-sizing: border-box;
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+/* Cardul Principal cu Două Coloane */
+.auth-card {
+    display: flex;
+    background-color: #2b2b2b; /* Fundal Card Gri Închis */
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); 
+    overflow: hidden;
+    min-height: 600px;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+/* Coloana de Formular (stânga) */
+.auth-form-column {
+    flex: 1; 
+    padding: 40px 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-sizing: border-box;
+}
+
+.auth-title {
+    font-size: 36px;
+    font-weight: 800;
+    color: #f0f0f0; /* Titlu Alb */
+    margin-bottom: 10px;
+}
+
+.auth-subtitle {
+    font-size: 16px;
+    color: #b0b0b0; /* Subtitlu gri deschis */
+    margin-bottom: 30px;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px; 
+    margin-bottom: 20px;
+}
+
+/* Stiluri Inputuri */
+.form-input {
+    padding: 15px;
+    border: 1px solid #444; 
+    border-radius: 10px; 
+    font-size: 16px;
+    color: #f0f0f0; 
+    background-color: #383838; /* Fundal Input Întunecat */
+    transition: all 0.2s ease-in-out;
+}
+
+.form-input::placeholder {
+    color: #888;
+}
+
+.form-input:focus {
+    border-color: #8a2be2; /* Mov la focus */
+    box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.4); 
+    outline: none;
+    background-color: #333;
+}
+
+/* Linkul de recuperare parola */
+.recovery-link {
+    text-align: right;
+    font-size: 14px;
+    color: #bb99ff; /* Mov mai deschis */
+    text-decoration: none;
+    transition: color 0.2s;
+    margin-top: -10px;
+}
+
+.recovery-link:hover {
+    color: #9c68cc; /* Mov mai închis la hover */
+    text-decoration: underline;
+}
+
+/* Butonul de Submit */
+.submit-button {
+    padding: 15px;
+    border: none;
+    border-radius: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    color: white;
+    background-color: #8a2be2; /* Mov principal */
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 4px 10px rgba(138, 43, 226, 0.3);
+}
+
+.submit-button:hover:not(:disabled) {
+    background-color: #6a0dad; 
+    box-shadow: 0 6px 15px rgba(138, 43, 226, 0.4);
+}
+
+.submit-button:disabled {
+    background-color: #555;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+/* Mesaj de Eroare */
+.error-message {
+    background-color: #4a1b1b; /* Fundal roșu închis pentru dark mode */
+    color: #ffcccc;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    text-align: center;
+    border: 1px solid #7c3a3a;
+    font-size: 15px;
+}
+
+/* Toggle area (Nu ai cont?) */
+.toggle-area {
+    text-align: center;
+    margin-top: 30px;
+    padding-top: 25px;
+    border-top: 1px solid #444; /* Linie separatoare gri închis */
+}
+
+.toggle-button {
+    background: none;
+    border: none;
+    color: #8a2be2; 
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
+    transition: color 0.2s;
+}
+
+.toggle-button:hover {
+    color: #6a0dad;
+    text-decoration: underline;
+}
+
+/* Coloana Vizuală (dreapta) */
+.auth-image-column {
+    flex: 1;
+    background-color: #383838; /* Fundal Coloana Imagine */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.auth-image {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: cover; 
+    border-radius: 15px; 
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Media Queries pentru Responsive Design (mobil) */
+@media (max-width: 800px) {
+    .auth-card {
+        flex-direction: column; 
+        min-height: auto;
+    }
+    .auth-form-column {
+        padding: 30px;
+    }
+    .auth-image-column {
+        display: none; /* Ascunde imaginea pe ecrane mici */
+    }
+    .auth-title {
+        font-size: 30px;
+    }
 }

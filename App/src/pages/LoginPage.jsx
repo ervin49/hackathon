@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-
+import WelcomeImage from '../assets/images/image.png';
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [username, setUsername] = useState(''); // Necesar doar la înregistrare
-  const [isRegistering, setIsRegistering] = useState(false); // Toggle Login/Register
+  const [username, setUsername] = useState('');
+  const [isRegistering, setIsRegistering] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const { login, register } = useAuth(); // Importăm funcțiile din context
+  const { login, register } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -20,7 +20,6 @@ const LoginPage = () => {
 
     try {
       if (isRegistering) {
-        // Logica de Inregistrare
         if (!username) {
           setError("Numele de utilizator este obligatoriu.");
           setLoading(false);
@@ -28,92 +27,105 @@ const LoginPage = () => {
         }
         await register(email, password, username);
       } else {
-        // Logica de Login
         await login(email, password);
       }
       
-      // Navigare la feed după succes
       navigate('/'); 
     } catch (err) {
       console.error("Eroare Firebase:", err.message);
-      // Mesaje de eroare mai clare pentru utilizator
+      let errorMessage = "Autentificarea a eșuat. Verifică datele.";
       if (err.code === 'auth/email-already-in-use') {
-        setError("Acest email este deja folosit.");
-      } else if (err.code === 'auth/weak-password') {
-        setError("Parola trebuie să aibă minim 6 caractere.");
+        errorMessage = "Acest email este deja folosit.";
       } else if (err.code === 'auth/invalid-credential' || err.code === 'auth/user-not-found') {
-        setError("Email sau parolă incorecte.");
-      } else {
-        setError(`A apărut o eroare: ${isRegistering ? 'Înregistrarea' : 'Autentificarea'} a eșuat.`);
+        errorMessage = "Email sau parolă incorecte.";
+      } else if (err.code === 'auth/weak-password') {
+        errorMessage = "Parola trebuie să aibă minim 6 caractere.";
       }
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
-      <div className="w-full max-w-md bg-white shadow-2xl rounded-xl p-8">
-        <h2 className="text-3xl font-extrabold text-gray-900 mb-6 text-center">
-          {isRegistering ? 'Înregistrează-te' : 'Autentifică-te'}
-        </h2>
+    <div className="auth-page-container">
+      <div className="auth-card">
+        {/* Coloana de Formular (stânga) */}
+        <div className="auth-form-column">
+          <h2 className="auth-title">
+            {isRegistering ? 'Crează un Cont' : 'Hello Again!'}
+          </h2>
+          <p className="auth-subtitle">
+            {isRegistering ? 'Alătură-te comunității noastre.' : "Să începem cu contul tău."}
+          </p>
 
-        {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" role="alert">
-            {error}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          
-          {isRegistering && (
-            <input 
-              type="text" 
-              value={username} 
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="Nume utilizator"
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" 
-              required
-            />
+          {error && (
+            <div className="error-message">
+              {error}
+            </div>
           )}
 
-          <input 
-            type="email" 
-            value={email} 
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Email"
-            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" 
-            required
+          <form onSubmit={handleSubmit} className="auth-form">
+            {isRegistering && (
+              <input 
+                type="text" 
+                value={username} 
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Nume de utilizator"
+                className="form-input" 
+                required
+              />
+            )}
+            <input 
+              type="email" 
+              value={email} 
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Email"
+              className="form-input" 
+              required
+            />
+            <input 
+              type="password" 
+              value={password} 
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Parolă"
+              className="form-input" 
+              required
+            />
+            
+            {!isRegistering && (
+              <a href="#" className="recovery-link">Ai uitat parola?</a>
+            )}
+
+            <button 
+              type="submit" 
+              disabled={loading}
+              className="submit-button"
+            >
+              {loading ? 'Se procesează...' : isRegistering ? 'Înregistrează-te' : 'Intră în Cont'}
+            </button>
+          </form>
+
+          <div className="toggle-area">
+            <button
+              onClick={() => setIsRegistering(!isRegistering)}
+              className="toggle-button"
+            >
+              {isRegistering
+                ? "Ai deja un cont? Autentifică-te."
+                : "Nu ai cont? Înregistrează-te acum."
+              }
+            </button>
+          </div>
+        </div>
+
+        {/* Coloana Vizuală (dreapta) */}
+        <div className="auth-image-column">
+          <img 
+            src={WelcomeImage}
+            alt="Welcome" 
+            className="auth-image"
           />
-
-          <input 
-            type="password" 
-            value={password} 
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Parolă (minim 6 caractere)"
-            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" 
-            required
-          />
-
-          <button 
-            type="submit" 
-            disabled={loading}
-            className={`w-full p-3 rounded-lg text-white font-semibold transition duration-150 ${loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}
-          >
-            {loading ? 'Se procesează...' : isRegistering ? 'Crează Cont' : 'Intră în Cont'}
-          </button>
-        </form>
-
-        <div className="mt-6 text-center">
-          <button
-            onClick={() => setIsRegistering(!isRegistering)}
-            className="text-sm text-blue-600 hover:text-blue-800 transition duration-150"
-          >
-            {isRegistering
-              ? "Ai deja cont? Autentifică-te"
-              : "Nu ai cont? Înregistrează-te"
-            }
-          </button>
         </div>
       </div>
     </div>
