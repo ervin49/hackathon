@@ -511,7 +511,7 @@ const MessagesPage = () => {
                                 fontSize: '15px',
                                 margin: 0
                             }}>
-                                Nu ai conversații încă. Caută utilizatori pentru a începe.
+                                You don't have any conversations yet. Start by searching for users above.
                             </p>
                         </div>
                     )}
@@ -830,7 +830,7 @@ const MessagesPage = () => {
                             margin: 0,
                             maxWidth: '400px'
                         }}>
-                            Caută utilizatori în panoul din stânga pentru a începe o conversație nouă
+                            Search for users on the left to start a new conversation or select an existing one.
                         </p>
                     </div>
                 )}

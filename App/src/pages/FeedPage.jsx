@@ -148,20 +148,19 @@ const FeedPage = () => {
     <div style={{
       display: 'flex',
       minHeight: '100vh',
-      backgroundColor: '#1a1625',
+      backgroundColor: '#231d30',
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
     }}>
       {/* Sidebar Stânga - Navigație */}
       <aside style={{
-        flex: '0 0 280px',
         width: '280px',
         backgroundColor: '#231d30',
         borderRight: '1px solid #2d2640',
         padding: '24px',
         display: 'flex',
         flexDirection: 'column',
-        position: 'relative',
-        height: 'auto',
+        position: 'fixed',
+        height: '100vh',
         overflowY: 'auto'
       }}>
         {/* User Profile Card */}
@@ -331,8 +330,8 @@ const FeedPage = () => {
       {/* Main Content Area - Centru */}
       <main style={{
         flex: 1,
-        marginLeft: 0,
-        marginRight: 0,
+        marginLeft: '280px',
+        marginRight: '320px',
         paddingTop: '20px',
         paddingBottom: '40px'
       }}>
@@ -493,13 +492,13 @@ const FeedPage = () => {
 
       {/* Sidebar Dreapta - Ieșiri */}
       <aside style={{
-        flex: '0 0 320px',
         width: '320px',
         backgroundColor: '#231d30',
         borderLeft: '1px solid #2d2640',
         padding: '24px',
-        position: 'relative',
-        height: 'auto',
+        position: 'fixed',
+        right: 0,
+        height: '100vh',
         overflowY: 'auto'
       }}>
         {/* Header */}
@@ -517,7 +516,7 @@ const FeedPage = () => {
               color: '#f9fafb',
               margin: 0
             }}>
-              Ieșiri
+              Events
             </h2>
           </div>
           <button
@@ -560,7 +559,7 @@ const FeedPage = () => {
           }}>
             <input
               type="text"
-              placeholder="Titlu ieșire"
+              placeholder="Title of Event"
               value={newEvent.title}
               onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}
               style={{
@@ -578,7 +577,7 @@ const FeedPage = () => {
             />
             <input
               type="text"
-              placeholder="Locație"
+              placeholder="Location"
               value={newEvent.location}
               onChange={(e) => setNewEvent({ ...newEvent, location: e.target.value })}
               style={{
@@ -645,7 +644,7 @@ const FeedPage = () => {
               onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#7c3aed'}
               onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#8b5cf6'}
             >
-              Creează Ieșire
+              Create Event
             </button>
           </div>
         )}
@@ -675,7 +674,7 @@ const FeedPage = () => {
                 fontSize: '14px',
                 margin: 0
               }}>
-                Nu există ieșiri planificate
+                There are no events yet. Create one to get started!
               </p>
             </div>
           ) : (
@@ -740,7 +739,7 @@ const FeedPage = () => {
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <FiClock style={{ width: '14px', height: '14px', color: '#9ca3af' }} />
                       <span style={{ color: '#9ca3af', fontSize: '13px' }}>
-                        {new Date(event.date).toLocaleDateString('ro-RO', { day: 'numeric', month: 'short' })} la {event.time}
+                        {new Date(event.date).toLocaleDateString('ro-RO', { day: 'numeric', month: 'short' })} at {event.time}
                       </span>
                     </div>
                   </div>
@@ -839,7 +838,7 @@ const FeedPage = () => {
                       e.currentTarget.style.color = '#6b7280';
                     }}
                   >
-                    creat de @{event.creatorName}
+                    created by {event.creatorName}
                   </div>
                 </div>
               );
