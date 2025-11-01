@@ -760,7 +760,7 @@ const FeedPage = () => {
                       }}>
                         <FiUsers style={{ width: '14px', height: '14px', color: '#8b5cf6' }} />
                         <span style={{ color: '#9ca3af', fontSize: '12px', fontWeight: '600' }}>
-                          {event.attendees.length} {event.attendees.length === 1 ? 'participant' : 'participanți'}
+                          {event.attendees.length} {event.attendees.length === 1 ? 'participant' : 'participants'}
                         </span>
                       </div>
                       <div style={{

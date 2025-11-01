@@ -687,25 +687,6 @@ const MessagesPage = () => {
                                 </div>
                             )}
                             
-                            {sendSuccess && (
-                                <div style={{
-                                    backgroundColor: '#10b981',
-                                    color: 'white',
-                                    padding: '12px 20px',
-                                    borderRadius: '12px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '10px',
-                                    marginTop: '12px'
-                                }}>
-                                    <span>✅ Mesaj trimis cu succes!</span>
-                                    <FiX 
-                                        style={{ cursor: 'pointer' }} 
-                                        onClick={() => setSendSuccess(false)} 
-                                    />
-                                </div>
-                            )}
-                            
                             {searchError && (
                                 <p style={{ 
                                     color: '#ef4444', 
@@ -731,7 +712,7 @@ const MessagesPage = () => {
                                 <textarea
                                     value={input}
                                     onChange={(e) => setInput(e.target.value)}
-                                    placeholder={`Scrie mesajul către ${selectedUser.username}...`}
+                                    placeholder={`Write message to ${selectedUser.username}...`}
                                     disabled={sending}
                                     onKeyDown={(e) => {
                                         if (e.key === 'Enter' && !e.shiftKey) {
