@@ -37,17 +37,24 @@ const CreatePost = ({ onPostCreated }) => {
       {/* ❗ Aplică clasa dark-text-light */}
       <h3 className="text-lg font-semibold dark-text-light mb-3">What's on your mind?</h3>
       
-      <form onSubmit={handleSubmit}>
-        <textarea
-          value={postContent}
-          onChange={(e) => setPostContent(e.target.value)}
-          placeholder={`Share something, ${userData?.username || 'User'}...`}
-          rows="3"
-          // ❗ Aplică clasa post-input
-          className="post-input" 
-          required
-        />
+      {/* 🛑 MODIFICARE: Setăm formularul ca un container Flex column */}
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column' }}>
         
+        {/* Container pentru textarea, asigură width: 100% */}
+        <div style={{ position: 'relative', width: '100%' }}>
+            <textarea
+              value={postContent}
+              onChange={(e) => setPostContent(e.target.value)}
+              placeholder={`Share something, ${userData?.username || 'User'}...`}
+              rows="3"
+              // ❗ Aplică clasa post-input, asigură resize: none
+              className="post-input" 
+              required
+              style={{ width: '100%', resize: 'none' }} // 🛑 Adăugat resize: none și width: 100%
+            />
+        </div>
+        
+        {/* 🛑 MODIFICARE: Alinierea butonului la dreapta */}
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '12px' }}>
           <button
             type="submit"

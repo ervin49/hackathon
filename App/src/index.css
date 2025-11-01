@@ -258,7 +258,8 @@ body {
     background-color: #2b2b2b; /* Fundal card */
     border: 1px solid #383838;
     border-radius: 12px;
-    padding: 20px;
+    /* 🛑 MODIFICARE: Mărește padding-ul de la 20px la 30px */
+    padding: 50px; 
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     transition: box-shadow 0.3s;
 }

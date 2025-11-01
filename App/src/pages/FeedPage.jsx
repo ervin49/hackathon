@@ -3,67 +3,436 @@ import { useAuth } from '../context/AuthContext';
 import PostCard from '../components/Post/PostCard'; 
 import CreatePost from '../components/Layout/CreatePost'; 
 import { getPosts } from '../services/postService'; 
+import { useNavigate } from 'react-router-dom';
+import { FiMessageSquare, FiTrendingUp, FiUser, FiLogOut, FiHome } from 'react-icons/fi';
 
 const FeedPage = () => {
-  const { userData } = useAuth();
+  const { userData, currentUser, logout } = useAuth();
+  const navigate = useNavigate();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Funcție de reîmprospătare (o vom folosi după ce se creează o postare nouă)
+  const goToMessages = () => {
+    navigate('/messages');
+  };
+
+  const goToProfile = () => {
+    if (currentUser?.uid) {
+      navigate(`/profile/${currentUser.uid}`);
+    }
+  };
+
+  const goToFeed = () => {
+    navigate('/');
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/login');
+    } catch (error) {
+      console.error("Logout Error:", error);
+      alert("Failed to log out. Please try again.");
+    }
+  };
+
+  // Funcție de reîmprospătare
   const refreshPosts = async () => {
-      try {
-          const fetchedPosts = await getPosts();
-          setPosts(fetchedPosts);
-          setError(null);
-      } catch (err) {
-          console.error("Eroare la reîncărcarea postărilor:", err);
-          setError("Nu am putut reîncărca postările.");
-      } finally {
-          setLoading(false);
-      }
+    try {
+      const fetchedPosts = await getPosts();
+      setPosts(fetchedPosts);
+      setError(null);
+    } catch (err) {
+      console.error("Eroare la reîncărcarea postărilor:", err);
+      setError("Nu am putut reîncărca postările.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
-    // Ruleaza functia de preluare a postarilor la incarcarea paginii
     refreshPosts(); 
   }, []); 
 
-  if (loading) {
-    return <div className="text-center mt-20 text-gray-400">Se încarcă Feed-ul...</div>;
-  }
-
-  if (error) {
-    return <div className="text-center mt-20 text-red-500">{error}</div>;
-  }
-  
   const username = userData?.username || 'User';
 
   return (
-    <div className="max-w-xl mx-auto p-4 pt-8">
-      
-      {/* 1. Zona de Creat Postare (Trimitem functia de refresh ca prop) */}
-      <CreatePost onPostCreated={refreshPosts} />
+    <div style={{
+      display: 'flex',
+      minHeight: '100vh',
+      backgroundColor: '#1a1625',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+    }}>
+      {/* Sidebar Stânga - Navigație */}
+      <aside style={{
+        width: '280px',
+        backgroundColor: '#231d30',
+        borderRight: '1px solid #2d2640',
+        padding: '24px',
+        display: 'flex',
+        flexDirection: 'column',
+        position: 'fixed',
+        height: '100vh',
+        overflowY: 'auto'
+      }}>
+        {/* Logo/Brand */}
+        <div style={{
+          marginBottom: '40px',
+          paddingBottom: '24px',
+          borderBottom: '1px solid #2d2640'
+        }}>
+          <h1 style={{
+            fontSize: '24px',
+            fontWeight: '700',
+            color: '#8b5cf6',
+            margin: 0,
+            letterSpacing: '-0.5px'
+          }}>
+            SocialHub
+          </h1>
+        </div>
 
-      {/* 2. Feed-ul de Postări */}
-      <div className="space-y-6 mt-8">
-        <h2 className="text-xl font-bold text-gray-700 mb-4">Latest Posts</h2>
-        
-        {posts.length === 0 ? (
-            <p className="text-gray-500 text-center">No posts yet. Be the first to share!</p>
-        ) : (
-            posts.map((post) => (
-                <PostCard 
-                    key={post.id} 
-                    post={{
+        {/* User Profile Card */}
+        <div style={{
+          backgroundColor: '#2d2640',
+          borderRadius: '12px',
+          padding: '16px',
+          marginBottom: '32px',
+          border: '1px solid #3d3650'
+        }}>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px'
+          }}>
+            <div style={{
+              width: '48px',
+              height: '48px',
+              borderRadius: '50%',
+              backgroundColor: '#8b5cf6',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '20px',
+              fontWeight: '600',
+              color: 'white'
+            }}>
+              {username.charAt(0).toUpperCase()}
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <h3 style={{
+                color: '#f9fafb',
+                fontSize: '16px',
+                fontWeight: '600',
+                margin: 0,
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap'
+              }}>
+                {username}
+              </h3>
+              <p style={{
+                color: '#9ca3af',
+                fontSize: '13px',
+                margin: '2px 0 0 0'
+              }}>
+                @{username.toLowerCase()}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Navigation Menu */}
+        <nav style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '8px',
+          flex: 1
+        }}>
+          <button
+            onClick={goToFeed}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              padding: '14px 16px',
+              backgroundColor: 'transparent',
+              color: '#e5e7eb',
+              border: 'none',
+              borderRadius: '12px',
+              fontSize: '15px',
+              fontWeight: '500',
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+              textAlign: 'left'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = '#2d2640';
+              e.currentTarget.style.color = '#8b5cf6';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent';
+              e.currentTarget.style.color = '#e5e7eb';
+            }}
+          >
+            <FiHome style={{ width: '20px', height: '20px' }} />
+            <span>Feed</span>
+          </button>
+
+          <button
+            onClick={goToProfile}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              padding: '14px 16px',
+              backgroundColor: 'transparent',
+              color: '#e5e7eb',
+              border: 'none',
+              borderRadius: '12px',
+              fontSize: '15px',
+              fontWeight: '500',
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+              textAlign: 'left'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = '#2d2640';
+              e.currentTarget.style.color = '#8b5cf6';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent';
+              e.currentTarget.style.color = '#e5e7eb';
+            }}
+          >
+            <FiUser style={{ width: '20px', height: '20px' }} />
+            <span>Profile</span>
+          </button>
+
+          <button
+            onClick={goToMessages}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              padding: '14px 16px',
+              backgroundColor: 'transparent',
+              color: '#e5e7eb',
+              border: 'none',
+              borderRadius: '12px',
+              fontSize: '15px',
+              fontWeight: '500',
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+              textAlign: 'left'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = '#2d2640';
+              e.currentTarget.style.color = '#8b5cf6';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent';
+              e.currentTarget.style.color = '#e5e7eb';
+            }}
+          >
+            <FiMessageSquare style={{ width: '20px', height: '20px' }} />
+            <span>Messages</span>
+          </button>
+        </nav>
+
+        {/* Logout Button - Bottom */}
+        <button
+          onClick={handleLogout}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            padding: '14px 16px',
+            backgroundColor: 'transparent',
+            color: '#ef4444',
+            border: '1px solid #2d2640',
+            borderRadius: '12px',
+            fontSize: '15px',
+            fontWeight: '500',
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+            marginTop: '24px'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = '#2d2640';
+            e.currentTarget.style.borderColor = '#ef4444';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = 'transparent';
+            e.currentTarget.style.borderColor = '#2d2640';
+          }}
+        >
+          <FiLogOut style={{ width: '20px', height: '20px' }} />
+          <span>Logout</span>
+        </button>
+      </aside>
+
+      {/* Main Content Area - Dreapta */}
+      <main style={{
+        flex: 1,
+        marginLeft: '280px',
+        paddingTop: '20px',
+        paddingBottom: '40px'
+      }}>
+        {/* Container Principal Centrat */}
+        <div style={{
+          maxWidth: '680px',
+          margin: '0 auto',
+          padding: '0 20px'
+        }}>
+          {/* Header */}
+          <div style={{
+            marginBottom: '24px',
+            padding: '0 8px'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <FiTrendingUp style={{
+                width: '28px',
+                height: '28px',
+                color: '#8b5cf6'
+              }} />
+              <h1 style={{
+                fontSize: '28px',
+                fontWeight: '700',
+                color: '#f9fafb',
+                margin: 0
+              }}>
+                Feed
+              </h1>
+            </div>
+          </div>
+
+          {/* Zona de Creat Postare */}
+          <div style={{
+            backgroundColor: '#231d30',
+            borderRadius: '16px',
+            padding: '20px',
+            marginBottom: '24px',
+            border: '1px solid #2d2640'
+          }}>
+            <CreatePost onPostCreated={refreshPosts} />
+          </div>
+
+          {/* Loading State */}
+          {loading && (
+            <div style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              padding: '60px 20px',
+              color: '#8b5cf6',
+              fontSize: '16px'
+            }}>
+              Se încarcă Feed-ul...
+            </div>
+          )}
+
+          {/* Error State */}
+          {error && (
+            <div style={{
+              backgroundColor: '#2d2640',
+              border: '1px solid #ef4444',
+              borderRadius: '12px',
+              padding: '16px',
+              color: '#ef4444',
+              textAlign: 'center',
+              marginBottom: '24px'
+            }}>
+              {error}
+            </div>
+          )}
+
+          {/* Feed-ul de Postări */}
+          {!loading && !error && (
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '20px'
+            }}>
+              {posts.length === 0 ? (
+                <div style={{
+                  backgroundColor: '#231d30',
+                  borderRadius: '16px',
+                  padding: '60px 40px',
+                  textAlign: 'center',
+                  border: '1px solid #2d2640'
+                }}>
+                  <div style={{
+                    width: '80px',
+                    height: '80px',
+                    borderRadius: '50%',
+                    backgroundColor: '#2d2640',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    margin: '0 auto 20px'
+                  }}>
+                    <FiTrendingUp style={{
+                      width: '40px',
+                      height: '40px',
+                      color: '#6b7280'
+                    }} />
+                  </div>
+                  <h3 style={{
+                    color: '#9ca3af',
+                    fontSize: '20px',
+                    fontWeight: '600',
+                    margin: '0 0 8px 0'
+                  }}>
+                    No posts yet
+                  </h3>
+                  <p style={{
+                    color: '#6b7280',
+                    fontSize: '15px',
+                    margin: 0
+                  }}>
+                    Be the first to share something!
+                  </p>
+                </div>
+              ) : (
+                posts.map((post) => (
+                  <div
+                    key={post.id}
+                    style={{
+                      backgroundColor: '#231d30',
+                      borderRadius: '16px',
+                      border: '1px solid #2d2640',
+                      overflow: 'hidden',
+                      transition: 'all 0.2s'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = '#8b5cf6';
+                      e.currentTarget.style.transform = 'translateY(-2px)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = '#2d2640';
+                      e.currentTarget.style.transform = 'translateY(0)';
+                    }}
+                  >
+                    <PostCard 
+                      post={{
                         ...post, 
-                        // Conversia obiectului Timestamp de la Firebase la un string lizibil
-                        timestamp: post.timestamp?.toDate().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: 'short' }) || 'just now'
-                    }} 
-                />
-            ))
-        )}
-      </div>
+                        timestamp: post.timestamp?.toDate().toLocaleTimeString('en-US', { 
+                          hour: '2-digit', 
+                          minute: '2-digit', 
+                          day: '2-digit', 
+                          month: 'short' 
+                        }) || 'just now'
+                      }} 
+                    />
+                  </div>
+                ))
+              )}
+            </div>
+          )}
+        </div>
+      </main>
     </div>
   );
 };

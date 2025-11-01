@@ -10,6 +10,7 @@ import PrivateRoute from './components/Layout/PrivateRoute.jsx';
 import LoginPage from './pages/LoginPage.jsx';
 import FeedPage from './pages/FeedPage.jsx';
 import ProfilePage from './pages/ProfilePage.jsx';
+import MessagesPage from './pages/MessagesPage.jsx';
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
           {/* Rutele protejate folosesc PrivateRoute */}
           <Route element={<PrivateRoute />}>
             <Route path="/" element={<FeedPage />} />
+            <Route path="/messages" element={<MessagesPage />} />
             {/* Ruta ta de profil folosește un parametru din URL pentru UID */}
             <Route path="/profile/:userId" element={<ProfilePage />} /> 
           </Route>
