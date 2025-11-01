@@ -6,7 +6,7 @@ import { getPosts } from '../services/postService';
 import { deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../services/firebase';
 import { useNavigate } from 'react-router-dom';
-import { FiMessageSquare, FiTrendingUp, FiUser, FiLogOut, FiHome } from 'react-icons/fi';
+import { FiMessageSquare, FiTrendingUp, FiUser, FiLogOut, FiHome, FiCalendar, FiMapPin, FiClock, FiUsers, FiPlus, FiX } from 'react-icons/fi';
 
 const FeedPage = () => {
   const { userData, currentUser, logout } = useAuth();
@@ -14,6 +14,16 @@ const FeedPage = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Events state
+  const [events, setEvents] = useState([]);
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [newEvent, setNewEvent] = useState({
+    title: '',
+    location: '',
+    date: '',
+    time: ''
+  });
 
   const goToMessages = () => {
     navigate('/messages');
@@ -39,6 +49,70 @@ const FeedPage = () => {
     }
   };
 
+  // Load events
+  useEffect(() => {
+    const loadEvents = () => {
+      const savedEvents = JSON.parse(localStorage.getItem('events') || '[]');
+      setEvents(savedEvents);
+    };
+    loadEvents();
+  }, []);
+
+  // Save events
+  const saveEvents = (updatedEvents) => {
+    localStorage.setItem('events', JSON.stringify(updatedEvents));
+    setEvents(updatedEvents);
+  };
+
+  const handleCreateEvent = () => {
+    if (!newEvent.title || !newEvent.location || !newEvent.date || !newEvent.time) {
+      alert('Please fill in all fields');
+      return;
+    }
+
+    const event = {
+      id: Date.now().toString(),
+      ...newEvent,
+      createdBy: currentUser?.uid,
+      creatorName: username,
+      attendees: [],
+      createdAt: new Date().toISOString()
+    };
+
+    const updatedEvents = [...events, event];
+    saveEvents(updatedEvents);
+    setNewEvent({ title: '', location: '', date: '', time: '' });
+    setShowCreateForm(false);
+  };
+
+  const handleAttendEvent = (eventId) => {
+    const updatedEvents = events.map(event => {
+      if (event.id === eventId) {
+        const isAttending = event.attendees.some(a => a.userId === currentUser?.uid);
+        if (isAttending) {
+          return {
+            ...event,
+            attendees: event.attendees.filter(a => a.userId !== currentUser?.uid)
+          };
+        } else {
+          return {
+            ...event,
+            attendees: [...event.attendees, { userId: currentUser?.uid, username }]
+          };
+        }
+      }
+      return event;
+    });
+    saveEvents(updatedEvents);
+  };
+
+  const handleDeleteEvent = (eventId) => {
+    if (window.confirm('Are you sure you want to delete this event?')) {
+      const updatedEvents = events.filter(e => e.id !== eventId);
+      saveEvents(updatedEvents);
+    }
+  };
+
   // Funcție de reîmprospătare
   const refreshPosts = async () => {
     try {
@@ -61,7 +135,6 @@ const FeedPage = () => {
     if (!window.confirm('Are you sure you want to delete this post?')) return;
     try {
       await deleteDoc(doc(db, 'posts', postId));
-      // Remove locally to keep UI snappy
       setPosts(prev => prev.filter(p => p.id !== postId));
     } catch (err) {
       console.error('Failed to delete post:', err);
@@ -90,8 +163,6 @@ const FeedPage = () => {
         height: '100vh',
         overflowY: 'auto'
       }}>
-        {/* Logo/Brand (removed empty divider) */}
-
         {/* User Profile Card */}
         <div style={{
           backgroundColor: '#2d2640',
@@ -256,10 +327,11 @@ const FeedPage = () => {
         </button>
       </aside>
 
-      {/* Main Content Area - Dreapta */}
+      {/* Main Content Area - Centru */}
       <main style={{
         flex: 1,
         marginLeft: '280px',
+        marginRight: '320px',
         paddingTop: '20px',
         paddingBottom: '40px'
       }}>
@@ -397,7 +469,7 @@ const FeedPage = () => {
                       e.currentTarget.style.borderColor = '#2d2640';
                       e.currentTarget.style.transform = 'translateY(0)';
                     }}
-                    >
+                  >
                     <PostCard 
                       post={{
                         ...post, 
@@ -417,6 +489,363 @@ const FeedPage = () => {
           )}
         </div>
       </main>
+
+      {/* Sidebar Dreapta - Ieșiri */}
+      <aside style={{
+        width: '320px',
+        backgroundColor: '#231d30',
+        borderLeft: '1px solid #2d2640',
+        padding: '24px',
+        position: 'fixed',
+        right: 0,
+        height: '100vh',
+        overflowY: 'auto'
+      }}>
+        {/* Header */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          marginBottom: '20px'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <FiCalendar style={{ width: '24px', height: '24px', color: '#8b5cf6' }} />
+            <h2 style={{
+              fontSize: '20px',
+              fontWeight: '700',
+              color: '#f9fafb',
+              margin: 0
+            }}>
+              Ieșiri
+            </h2>
+          </div>
+          <button
+            onClick={() => setShowCreateForm(!showCreateForm)}
+            style={{
+              width: '36px',
+              height: '36px',
+              borderRadius: '8px',
+              backgroundColor: showCreateForm ? '#ef4444' : '#8b5cf6',
+              border: 'none',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              transition: 'all 0.2s'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.opacity = '0.8';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.opacity = '1';
+            }}
+          >
+            {showCreateForm ? (
+              <FiX style={{ width: '20px', height: '20px', color: 'white' }} />
+            ) : (
+              <FiPlus style={{ width: '20px', height: '20px', color: 'white' }} />
+            )}
+          </button>
+        </div>
+
+        {/* Create Event Form */}
+        {showCreateForm && (
+          <div style={{
+            backgroundColor: '#2d2640',
+            borderRadius: '12px',
+            padding: '16px',
+            marginBottom: '20px',
+            border: '1px solid #3d3650'
+          }}>
+            <input
+              type="text"
+              placeholder="Titlu ieșire"
+              value={newEvent.title}
+              onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}
+              style={{
+                width: '100%',
+                padding: '10px 12px',
+                backgroundColor: '#1a1625',
+                border: '1px solid #3d3650',
+                borderRadius: '8px',
+                color: '#f9fafb',
+                fontSize: '14px',
+                marginBottom: '12px',
+                outline: 'none',
+                boxSizing: 'border-box'
+              }}
+            />
+            <input
+              type="text"
+              placeholder="Locație"
+              value={newEvent.location}
+              onChange={(e) => setNewEvent({ ...newEvent, location: e.target.value })}
+              style={{
+                width: '100%',
+                padding: '10px 12px',
+                backgroundColor: '#1a1625',
+                border: '1px solid #3d3650',
+                borderRadius: '8px',
+                color: '#f9fafb',
+                fontSize: '14px',
+                marginBottom: '12px',
+                outline: 'none',
+                boxSizing: 'border-box'
+              }}
+            />
+            <input
+              type="date"
+              value={newEvent.date}
+              onChange={(e) => setNewEvent({ ...newEvent, date: e.target.value })}
+              style={{
+                width: '100%',
+                padding: '10px 12px',
+                backgroundColor: '#1a1625',
+                border: '1px solid #3d3650',
+                borderRadius: '8px',
+                color: '#f9fafb',
+                fontSize: '14px',
+                marginBottom: '12px',
+                outline: 'none',
+                boxSizing: 'border-box'
+              }}
+            />
+            <input
+              type="time"
+              value={newEvent.time}
+              onChange={(e) => setNewEvent({ ...newEvent, time: e.target.value })}
+              style={{
+                width: '100%',
+                padding: '10px 12px',
+                backgroundColor: '#1a1625',
+                border: '1px solid #3d3650',
+                borderRadius: '8px',
+                color: '#f9fafb',
+                fontSize: '14px',
+                marginBottom: '12px',
+                outline: 'none',
+                boxSizing: 'border-box'
+              }}
+            />
+            <button
+              onClick={handleCreateEvent}
+              style={{
+                width: '100%',
+                padding: '10px',
+                backgroundColor: '#8b5cf6',
+                border: 'none',
+                borderRadius: '8px',
+                color: 'white',
+                fontSize: '14px',
+                fontWeight: '600',
+                cursor: 'pointer',
+                transition: 'all 0.2s'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#7c3aed'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#8b5cf6'}
+            >
+              Creează Ieșire
+            </button>
+          </div>
+        )}
+
+        {/* Events List */}
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '16px'
+        }}>
+          {events.length === 0 ? (
+            <div style={{
+              backgroundColor: '#2d2640',
+              borderRadius: '12px',
+              padding: '32px 20px',
+              textAlign: 'center',
+              border: '1px solid #3d3650'
+            }}>
+              <FiCalendar style={{
+                width: '40px',
+                height: '40px',
+                color: '#6b7280',
+                margin: '0 auto 12px'
+              }} />
+              <p style={{
+                color: '#9ca3af',
+                fontSize: '14px',
+                margin: 0
+              }}>
+                Nu există ieșiri planificate
+              </p>
+            </div>
+          ) : (
+            events.map(event => {
+              const isAttending = event.attendees.some(a => a.userId === currentUser?.uid);
+              const isCreator = event.createdBy === currentUser?.uid;
+
+              return (
+                <div
+                  key={event.id}
+                  style={{
+                    backgroundColor: '#2d2640',
+                    borderRadius: '12px',
+                    padding: '16px',
+                    border: '1px solid #3d3650',
+                    transition: 'all 0.2s'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.borderColor = '#8b5cf6'}
+                  onMouseLeave={(e) => e.currentTarget.style.borderColor = '#3d3650'}
+                >
+                  <div style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'flex-start',
+                    marginBottom: '12px'
+                  }}>
+                    <h3 style={{
+                      color: '#f9fafb',
+                      fontSize: '16px',
+                      fontWeight: '600',
+                      margin: 0,
+                      flex: 1
+                    }}>
+                      {event.title}
+                    </h3>
+                    {isCreator && (
+                      <button
+                        onClick={() => handleDeleteEvent(event.id)}
+                        style={{
+                          width: '24px',
+                          height: '24px',
+                          borderRadius: '6px',
+                          backgroundColor: 'transparent',
+                          border: 'none',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          cursor: 'pointer',
+                          color: '#ef4444'
+                        }}
+                      >
+                        <FiX style={{ width: '16px', height: '16px' }} />
+                      </button>
+                    )}
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '12px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <FiMapPin style={{ width: '14px', height: '14px', color: '#9ca3af' }} />
+                      <span style={{ color: '#9ca3af', fontSize: '13px' }}>{event.location}</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <FiClock style={{ width: '14px', height: '14px', color: '#9ca3af' }} />
+                      <span style={{ color: '#9ca3af', fontSize: '13px' }}>
+                        {new Date(event.date).toLocaleDateString('ro-RO', { day: 'numeric', month: 'short' })} la {event.time}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Attendees */}
+                  {event.attendees.length > 0 && (
+                    <div style={{
+                      backgroundColor: '#1a1625',
+                      borderRadius: '8px',
+                      padding: '10px',
+                      marginBottom: '12px'
+                    }}>
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        marginBottom: '8px'
+                      }}>
+                        <FiUsers style={{ width: '14px', height: '14px', color: '#8b5cf6' }} />
+                        <span style={{ color: '#9ca3af', fontSize: '12px', fontWeight: '600' }}>
+                          {event.attendees.length} {event.attendees.length === 1 ? 'participant' : 'participanți'}
+                        </span>
+                      </div>
+                      <div style={{
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        gap: '6px'
+                      }}>
+                        {event.attendees.map((attendee, idx) => (
+                          <span
+                            key={idx}
+                            onClick={() => navigate(`/profile/${attendee.userId}`)}
+                            style={{
+                              backgroundColor: '#2d2640',
+                              color: '#e5e7eb',
+                              padding: '4px 8px',
+                              borderRadius: '6px',
+                              fontSize: '12px',
+                              cursor: 'pointer',
+                              transition: 'all 0.2s'
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.backgroundColor = '#8b5cf6';
+                              e.currentTarget.style.color = 'white';
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.backgroundColor = '#2d2640';
+                              e.currentTarget.style.color = '#e5e7eb';
+                            }}
+                          >
+                            @{attendee.username}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <button
+                    onClick={() => handleAttendEvent(event.id)}
+                    style={{
+                      width: '100%',
+                      padding: '10px',
+                      backgroundColor: isAttending ? '#10b981' : '#8b5cf6',
+                      border: 'none',
+                      borderRadius: '8px',
+                      color: 'white',
+                      fontSize: '13px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.opacity = '0.8';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.opacity = '1';
+                    }}
+                  >
+                    {isAttending ? "✓ I'm Coming" : "I'm Coming"}
+                  </button>
+
+                  <div 
+                    onClick={() => navigate(`/profile/${event.createdBy}`)}
+                    style={{
+                      marginTop: '8px',
+                      fontSize: '11px',
+                      color: '#6b7280',
+                      textAlign: 'center',
+                      cursor: 'pointer',
+                      transition: 'color 0.2s'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = '#8b5cf6';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = '#6b7280';
+                    }}
+                  >
+                    creat de @{event.creatorName}
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
+      </aside>
     </div>
   );
 };
