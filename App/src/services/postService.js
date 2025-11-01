@@ -19,7 +19,6 @@ import {
 
 // Functie pentru a prelua toate postarile (pentru Feed)
 export const getPosts = async () => {
-    // ATENTIE: Folosim numele de campuri din baza ta de date: 'timestamp' si 'userName'
     const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
     
     const querySnapshot = await getDocs(q);
@@ -30,7 +29,6 @@ export const getPosts = async () => {
         posts.push({
             id: doc.id,
             ...data,
-            // Mapare pentru a se potrivi cu PostCard.jsx
             authorId: data.userId, 
             authorUsername: data.userName,
         });
@@ -45,7 +43,8 @@ export const createPost = async (userId, userName, content) => {
         userId, 
         userName, 
         content,
-        timestamp: new Date(),
+        // 🛑 CORECȚIE: Folosim new Date() pentru a salva ca string în Firestore (conform structurii tale)
+        timestamp: new Date(), 
         likes: 0,
         commentsCount: 0,
     });
@@ -55,18 +54,12 @@ export const createPost = async (userId, userName, content) => {
 // 2. FUNCȚII PENTRU LIKE/UNLIKE (Preluat din logica ta stabila)
 // -------------------------------------------------------------------
 
-/**
- * Verifica daca un utilizator a dat like unei postari.
- */
 export const checkIfLiked = async (postId, userId) => {
     const likeRef = doc(db, "posts", postId, "likes", userId);
     const docSnap = await getDoc(likeRef);
     return docSnap.exists();
 };
 
-/**
- * Adauga/Sterge like si actualizeaza contorul folosind un batch.
- */
 export const toggleLikePost = async (postId, userId, isCurrentlyLiked) => {
     const postRef = doc(db, "posts", postId);
     const likeRef = doc(db, "posts", postId, "likes", userId); 
@@ -108,7 +101,7 @@ export const addComment = async (postId, userId, userName, content) => {
         authorId: userId,
         authorName: userName,
         content: content,
-        timestamp: new Date(),
+        timestamp: new Date(), // Sincronizat cu formatul PostCard
     });
 
     // 2. Incrementează contorul commentsCount

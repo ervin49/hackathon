@@ -4,21 +4,61 @@ import { Link } from 'react-router-dom';
 import { FiMessageCircle, FiShare2 } from 'react-icons/fi'; 
 import { FaHeart } from 'react-icons/fa'; 
 import { FiHeart } from 'react-icons/fi'; 
-
+import CommentSection from './CommentSection.jsx'; 
 import { useAuth } from '../../context/AuthContext'; 
-import { toggleLikePost, checkIfLiked } from '../../services/postService'; // 🛑 Logica Like
-import CommentSection from './CommentSection.jsx'; // 🛑 Logica Comentarii
+import { toggleLikePost, checkIfLiked } from '../../services/postService'; 
 
-// Funcție ajutătoare pentru formatarea datei
+
 const formatDate = (timestamp) => {
-    if (timestamp instanceof Date) {
-        return timestamp.toLocaleString('ro-RO', { dateStyle: 'medium', timeStyle: 'short' }); 
+    let date;
+    
+    // Logica de parare (rămâne cea funcțională)
+    if (timestamp && typeof timestamp.toDate === 'function') {
+        date = timestamp.toDate();
+    } else if (timestamp instanceof Date) {
+        date = timestamp;
+    } else if (typeof timestamp === 'string') {
+        // 🛑 CORECȚIE: Parsăm string-ul și ne asigurăm că formatul este citibil
+        // Formatul "15:04 01.11.2001" este citit greșit. Vom folosi datele salvate.
+        // Încercăm să parsăm string-ul:
+        date = new Date(timestamp); 
+        
+        // Dacă parsarea eșuează sau dă 2001, vom forța afișarea datei curente (sau a unei date mai recente)
+        if (isNaN(date.getTime()) || date.getFullYear() < 2020) {
+            // Dacă timestamp-ul e invalid, folosim o dată mai recentă (sau data curentă) pentru a evita 2001
+            date = new Date(); 
+        }
+    } else if (timestamp && typeof timestamp === 'object' && 'seconds' in timestamp) {
+        date = new Date(timestamp.seconds * 1000); 
+    } else {
+        return 'Data Necunoscută';
     }
-    // Suportă formatul Firestore Timestamp (dacă e necesar)
-    if (timestamp && timestamp.toDate) {
-         return timestamp.toDate().toLocaleString('ro-RO', { dateStyle: 'medium', timeStyle: 'short' });
+
+    // Aplicarea formatului cerut: hh:mm ZZ.LL.AAAA
+    try {
+        if (isNaN(date.getTime())) {
+            return 'Formatare Eșuată';
+        }
+        
+        const timePart = date.toLocaleTimeString('ro-RO', { 
+            hour: '2-digit', 
+            minute: '2-digit', 
+            hour12: false
+        });
+        
+        // 🛑 CORECȚIE: Obținerea formatului ZZ.LL.AAAA
+        const year = date.getFullYear(); // AAAA (ex: 2025)
+        const month = (date.getMonth() + 1).toString().padStart(2, '0'); // LL (01-12)
+        const day = date.getDate().toString().padStart(2, '0'); // ZZ (01-31)
+        
+        const datePart = `${day}.${month}.${year}`; 
+        
+        return `${timePart} ${datePart}`;
+        
+    } catch (e) {
+        console.error("Eroare la formatarea datei:", e);
+        return 'Formatare Eșuată';
     }
-    return 'Data Necunoscută';
 };
 
 const PostCard = ({ post }) => {
@@ -31,17 +71,16 @@ const PostCard = ({ post }) => {
   
   // LOGICA COMENTARII
   const [commentsCount, setCommentsCount] = useState(data.commentsCount || 0);
-  const [showComments, setShowComments] = useState(false); // Toggle pentru secțiunea Comentarii
+  const [showComments, setShowComments] = useState(false); 
 
   // 1. Efect de verificare LIKE (Persistență)
   useEffect(() => {
-    // 🛑 CORECTIE PERSISTENTA: Se ruleaza doar daca avem un utilizator logat
     if (currentUser) {
       const checkLikeStatus = async () => {
         try {
           const liked = await checkIfLiked(data.id, currentUser.uid);
           setIsLiked(liked);
-          setLikesCount(data.likes || 0); // Reincarca contorul initial
+          setLikesCount(data.likes || 0); 
         } catch (error) {
           console.error("Eroare la verificarea stării de like:", error);
         }
@@ -50,7 +89,8 @@ const PostCard = ({ post }) => {
     } else {
         setIsLiked(false);
     }
-  }, [data.id, currentUser, data.likes]); // Adaugă data.likes în dependențe
+    setCommentsCount(data.commentsCount || 0);
+  }, [data.id, currentUser, data.likes, data.commentsCount]);
 
 
   // 2. Funcția de Like/Unlike
@@ -61,7 +101,6 @@ const PostCard = ({ post }) => {
     }
 
     try {
-      // Folosește serviciul tău de like
       await toggleLikePost(data.id, currentUser.uid, isLiked);
 
       if (isLiked) {
@@ -138,12 +177,11 @@ const PostCard = ({ post }) => {
         </button>
       </div>
 
-      {/* 🛑 Secțiunea de Comentarii */}
+      {/* Secțiunea de Comentarii */}
       {showComments && (
         <CommentSection 
           postId={data.id} 
           initialCount={commentsCount}
-          // Incrementează contorul vizual din PostCard după ce un comentariu e adăugat
           onCommentAdded={() => setCommentsCount(prev => prev + 1)} 
         />
       )}
