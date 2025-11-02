@@ -28,7 +28,7 @@ const Header = () => {
       
       {/* ❗ Aplică clasa app-logo */}
       <Link to="/" className="app-logo">
-        SocialHub
+        ToGather
       </Link>
       
       <nav className="flex items-center space-x-4">
